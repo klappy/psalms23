@@ -8,6 +8,10 @@
   <link rel="stylesheet" href="styles.css"/>
 </head>
 <body>
+  <!-- Loading overlay -->
+  <div id="loader">
+     <div class="progress">Loading…</div>
+  </div>
   <div id="scrollContainer">
     <section class="panel" id="verse1">
       <div class="bg" style="background-image:url('https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1050&q=80');"></div>
@@ -16,6 +20,8 @@
 
     <section class="panel" id="verse2">
       <div class="bg water" style="background-image:url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1050&q=80');"></div>
+      <!-- 3D canvas for flowing water particles -->
+      <canvas id="threeVerse2" class="three-canvas"></canvas>
       <p class="verse">He makes me lie down in green pastures.<br/>He leads me beside still waters.</p>
       <audio class="ambient-audio" src="audio/stream.mp3" loop preload="auto" muted></audio>
     </section>
@@ -39,6 +45,8 @@
 
     <section class="panel" id="verse6">
       <div class="bg" style="background-image:url('https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1050&q=80');"></div>
+      <!-- 3D canvas for star field -->
+      <canvas id="threeVerse6" class="three-canvas"></canvas>
       <p class="verse">Surely goodness and mercy shall follow me<br/>all the days of my life,<br/>and I shall dwell in the house of the Lord<br/>forever.</p>
       <audio class="ambient-audio" src="audio/choir.mp3" loop preload="auto" muted></audio>
     </section>
@@ -46,6 +54,7 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" integrity="sha512-PnM1YAEvmLLXOwnkpYGjFZPq1MIu6MY+aLAyzwG0i7VDJfEpH8yP2EwzD9gKdDxzO3yL3OHajdThM5bJYP6J7w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js" integrity="sha512-l9XoNpqUY+OwNzPVPuA6s6ZtRWUSZGgScHUgKCM3j7zdJ2O1xNv51DlZNFdKPMChU30n7zOaYT34nfaXlp1H/A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r152/three.min.js" integrity="sha512-dOzOJbRRqtD9h5pz50jdK5Zk90un0nLBKBPXn1HULICwhf66A1VpzwuNFuIBqmoeZaZX6mE6oPD58Ll35H0Tmw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src="script.js"></script>
 </body>
 </html>

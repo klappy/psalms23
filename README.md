@@ -9,6 +9,9 @@ An interactive, responsive, scroll-based visual experience that brings **Psalm 2
 * Mobile-first, fully responsive design
 * Zero build-step — pure HTML, CSS, & JS served directly or from any static host
 * Easily swap imagery or add ambient audio for deeper immersion
+* 3D particle water shimmer (Verse 2) & star field (Verse 6) via **Three.js** (lazy-loaded)
+* Device-tilt micro-parallax for verse text
+* Simple loader overlay for slower connections
 
 ## 📂 Project structure
 
@@ -33,6 +36,20 @@ No build tools required — perfect for dropping into an existing website or pre
 * **Fonts / Colors:** Edit `styles.css` to change typography, palette, or add branding.
 * **Audio:** To embed ambient sound, add an `<audio>` tag to `index.html` with the `autoplay` and `loop` attributes, then gently fade volume with GSAP for smooth transitions.
 * **Deeper interactivity:** Because GSAP is already loaded, you can extend the experience with 3-D transforms, split-text reveals, or canvas/WebGL overlays.
+
+## 🔉 Audio sourcing
+
+Put small, loop-friendly MP3 files into `audio/`:
+
+* `stream.mp3` – gentle creek/stream loop (≈15-20 s)
+* `valley_wind.mp3` – low wind/rumble ambience (≈15 s)
+* `choir.mp3` – soft choir pad (≈30 s)
+
+Free sources:
+* [Pixabay Audio](https://pixabay.com/music/) – search *river*, *wind*, *choir pad*
+* [Freesound](https://freesound.org) – CC-0 clips are plentiful
+
+Keep files small (<1 MB) to ensure quick loading on mobile.
 
 ## 🤝 Credits & Licensing
 
