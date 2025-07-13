@@ -1,4 +1,6 @@
-gsap.registerPlugin(ScrollTrigger);
+if(typeof gsap!=='undefined' && typeof ScrollTrigger!=='undefined'){
+  gsap.registerPlugin(ScrollTrigger);
+}
 // ----------------- Feature detection -----------------
 const WEBGL_AVAILABLE = (()=>{
   try{ const c=document.createElement('canvas'); return !!window.WebGLRenderingContext && (c.getContext('webgl')||c.getContext('experimental-webgl')); }catch(e){ return false; }})();
@@ -77,6 +79,86 @@ if(ANIM_ENABLED){
   });
 
   // Unlock audio handler remains same (it's independent)
+
+  // ----------------- Verse 2 – Water Particles -----------------
+  function initWaterParticles(){
+    if(!WEBGL_AVAILABLE) return;
+    const canvas = document.getElementById('threeVerse2');
+    if(!canvas || !canvas.getContext) return;
+    if(typeof THREE==='undefined') return;
+
+    const renderer = createRenderer(canvas);
+    const camera = createCamera(canvas);
+    const scene = new THREE.Scene();
+
+    // create small blue-ish particles moving upward like sparkles on water
+    const count = 800;
+    const geometry = new THREE.BufferGeometry();
+    const positions = new Float32Array(count*3);
+    for(let i=0;i<count;i++){
+      positions[i*3] = (Math.random()-0.5)*3; // x
+      positions[i*3+1] = Math.random()*2;      // y
+      positions[i*3+2] = (Math.random()-0.5)*3; // z
+    }
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions,3));
+    const material = new THREE.PointsMaterial({color:0x66ccff,size:0.02,transparent:true,opacity:0.7});
+    const points = new THREE.Points(geometry,material);
+    scene.add(points);
+
+    threeSetups.push({renderer,camera});
+
+    gsap.ticker.add(()=>{
+      points.rotation.y += 0.002;
+      renderer.render(scene,camera);
+    });
+  }
+
+  // ----------------- Verse 6 – Star Field -----------------
+  function initStarField(){
+    if(!WEBGL_AVAILABLE) return;
+    const canvas = document.getElementById('threeVerse6');
+    if(!canvas || !canvas.getContext) return;
+    if(typeof THREE==='undefined') return;
+
+    const renderer = createRenderer(canvas);
+    const camera = createCamera(canvas);
+    const scene = new THREE.Scene();
+
+    const count = 1000;
+    const geometry = new THREE.BufferGeometry();
+    const positions = new Float32Array(count*3);
+    for(let i=0;i<count;i++){
+      positions[i*3] = (Math.random()-0.5)*6;
+      positions[i*3+1] = (Math.random()-0.5)*6;
+      positions[i*3+2] = (Math.random()-0.5)*6;
+    }
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions,3));
+    const material = new THREE.PointsMaterial({color:0xffffff,size:0.03,transparent:true,opacity:0.9});
+    const stars = new THREE.Points(geometry,material);
+    scene.add(stars);
+
+    threeSetups.push({renderer,camera});
+
+    gsap.ticker.add(()=>{
+      stars.rotation.y += 0.0008;
+      stars.rotation.x += 0.0005;
+      renderer.render(scene,camera);
+    });
+  }
+
+  ScrollTrigger.create({
+    trigger:'#verse2',
+    start:'top 80%',
+    once:true,
+    onEnter:initWaterParticles
+  });
+
+  ScrollTrigger.create({
+    trigger:'#verse6',
+    start:'top 80%',
+    once:true,
+    onEnter:initStarField
+  });
 }
 
 // If ANIM_ENABLED false, basic interaction: allow verse text tap to focus
@@ -182,86 +264,6 @@ function onResize(){
   });
 }
 window.addEventListener('resize', onResize);
-
-// ----------------- Verse 2 – Water Particles -----------------
-function initWaterParticles(){
-  if(!WEBGL_AVAILABLE) return;
-  const canvas = document.getElementById('threeVerse2');
-  if(!canvas || !canvas.getContext) return;
-  if(typeof THREE==='undefined') return;
-
-  const renderer = createRenderer(canvas);
-  const camera = createCamera(canvas);
-  const scene = new THREE.Scene();
-
-  // create small blue-ish particles moving upward like sparkles on water
-  const count = 800;
-  const geometry = new THREE.BufferGeometry();
-  const positions = new Float32Array(count*3);
-  for(let i=0;i<count;i++){
-    positions[i*3] = (Math.random()-0.5)*3; // x
-    positions[i*3+1] = Math.random()*2;      // y
-    positions[i*3+2] = (Math.random()-0.5)*3; // z
-  }
-  geometry.setAttribute('position', new THREE.BufferAttribute(positions,3));
-  const material = new THREE.PointsMaterial({color:0x66ccff,size:0.02,transparent:true,opacity:0.7});
-  const points = new THREE.Points(geometry,material);
-  scene.add(points);
-
-  threeSetups.push({renderer,camera});
-
-  gsap.ticker.add(()=>{
-    points.rotation.y += 0.002;
-    renderer.render(scene,camera);
-  });
-}
-
-// ----------------- Verse 6 – Star Field -----------------
-function initStarField(){
-  if(!WEBGL_AVAILABLE) return;
-  const canvas = document.getElementById('threeVerse6');
-  if(!canvas || !canvas.getContext) return;
-  if(typeof THREE==='undefined') return;
-
-  const renderer = createRenderer(canvas);
-  const camera = createCamera(canvas);
-  const scene = new THREE.Scene();
-
-  const count = 1000;
-  const geometry = new THREE.BufferGeometry();
-  const positions = new Float32Array(count*3);
-  for(let i=0;i<count;i++){
-    positions[i*3] = (Math.random()-0.5)*6;
-    positions[i*3+1] = (Math.random()-0.5)*6;
-    positions[i*3+2] = (Math.random()-0.5)*6;
-  }
-  geometry.setAttribute('position', new THREE.BufferAttribute(positions,3));
-  const material = new THREE.PointsMaterial({color:0xffffff,size:0.03,transparent:true,opacity:0.9});
-  const stars = new THREE.Points(geometry,material);
-  scene.add(stars);
-
-  threeSetups.push({renderer,camera});
-
-  gsap.ticker.add(()=>{
-    stars.rotation.y += 0.0008;
-    stars.rotation.x += 0.0005;
-    renderer.render(scene,camera);
-  });
-}
-
-ScrollTrigger.create({
-  trigger:'#verse2',
-  start:'top 80%',
-  once:true,
-  onEnter:initWaterParticles
-});
-
-ScrollTrigger.create({
-  trigger:'#verse6',
-  start:'top 80%',
-  once:true,
-  onEnter:initStarField
-});
 
 // ----------------- Device Tilt Parallax -----------------
 if(window.DeviceOrientationEvent && typeof THREE!=='undefined'){
