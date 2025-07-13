@@ -83,9 +83,20 @@ if(window.matchMedia('(pointer:fine)').matches){
 }
 
 // ----------------- Loader Handling -----------------
-const loaderEl = document.getElementById('loader');
-function hideLoader(){ loaderEl?.classList.add('hidden'); }
+// Add at very top of file
+// ----------------- Loader helper & global error handling -----------------
+function hideLoader(){
+  const l=document.getElementById('loader');
+  if(l) l.classList.add('hidden');
+}
 
+// Log JS errors and ensure loader disappears
+window.addEventListener('error', (e)=>{
+  console.error('Global JS error:', e.message, e.filename, e.lineno);
+  hideLoader();
+});
+
+const loaderEl=document.getElementById('loader');
 // Hide shortly after DOM ready (don’t wait for slow external media)
 document.addEventListener('DOMContentLoaded',()=>{
   setTimeout(hideLoader,1200);
@@ -94,15 +105,27 @@ document.addEventListener('DOMContentLoaded',()=>{
 // Ensure it also hides once full page finished
 window.addEventListener('load', hideLoader);
 
-// Fallback after 10 s – allow user to continue
+// Fallback after 10 s – let user dismiss manually
 setTimeout(()=>{
-  if(!loaderEl.classList.contains('hidden')){
+  if(loaderEl && !loaderEl.classList.contains('hidden')){
     loaderEl.classList.add('interactive');
     const progress=loaderEl.querySelector('.progress');
     if(progress) progress.textContent='Still loading… tap to continue';
     loaderEl.addEventListener('click', hideLoader, {once:true});
   }
 }, 10000);
+
+// Check for missing third-party libs after 3 s
+setTimeout(()=>{
+  const missing=[];
+  if(typeof gsap==='undefined') missing.push('GSAP');
+  if(typeof ScrollTrigger==='undefined') missing.push('ScrollTrigger');
+  if(typeof THREE==='undefined') missing.push('Three.js');
+  if(missing.length){
+    console.warn('Some libraries failed to load:', missing.join(', '));
+    hideLoader();
+  }
+}, 3000);
 
 // ----------------- Three.js Helpers -----------------
 function createRenderer(canvas){
