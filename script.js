@@ -4,65 +4,84 @@ const WEBGL_AVAILABLE = (()=>{
   try{ const c=document.createElement('canvas'); return !!window.WebGLRenderingContext && (c.getContext('webgl')||c.getContext('experimental-webgl')); }catch(e){ return false; }})();
 if(!WEBGL_AVAILABLE){ document.documentElement.classList.add('no-webgl'); }
 
-// Loop through each "panel" section and create animations
-Array.from(document.querySelectorAll('.panel')).forEach(panel => {
-  const bg = panel.querySelector('.bg');
-  const verse = panel.querySelector('.verse');
-  const audio = panel.querySelector('.ambient-audio');
+let ANIM_ENABLED = (typeof gsap!=='undefined' && typeof ScrollTrigger!=='undefined');
+if(!ANIM_ENABLED){
+  console.warn('GSAP/ScrollTrigger not available – running in static fallback mode.');
+}
 
-  // Background parallax (scale in as user scrolls)
-  gsap.fromTo(bg,
-    {scale:1.4},
-    {
-      scale:1,
-      ease:'none',
-      scrollTrigger:{
-        trigger:panel,
-        start:'top bottom', // when top of panel hits bottom of viewport
-        end:'bottom top',   // when bottom of panel hits top of viewport
-        scrub:true
+if(ANIM_ENABLED){
+  // Original GSAP animation setup wrapped
+
+  // Loop through each "panel" section and create animations
+  Array.from(document.querySelectorAll('.panel')).forEach(panel => {
+    const bg = panel.querySelector('.bg');
+    const verse = panel.querySelector('.verse');
+    const audio = panel.querySelector('.ambient-audio');
+
+    // Background parallax (scale in as user scrolls)
+    gsap.fromTo(bg,
+      {scale:1.4},
+      {
+        scale:1,
+        ease:'none',
+        scrollTrigger:{
+          trigger:panel,
+          start:'top bottom',
+          end:'bottom top',
+          scrub:true
+        }
       }
-    }
-  );
+    );
 
-  // Verse fade & rise
-  gsap.fromTo(verse,
-    {autoAlpha:0, y:50},
-    {
-      autoAlpha:1,
-      y:0,
-      ease:'power1.out',
-      scrollTrigger:{
-        trigger:panel,
-        start:'top center',
-        end:'center center',
-        scrub:true
+    // Verse fade & rise
+    gsap.fromTo(verse,
+      {autoAlpha:0, y:50},
+      {
+        autoAlpha:1,
+        y:0,
+        ease:'power1.out',
+        scrollTrigger:{
+          trigger:panel,
+          start:'top center',
+          end:'center center',
+          scrub:true
+        }
       }
+    );
+
+    // Ambient audio volume control tied to scroll
+    if(audio){
+      audio.volume = 0;
+      audio.play().catch(()=>{});
+
+      ScrollTrigger.create({
+        trigger: panel,
+        start: 'top bottom',
+        end: 'bottom top',
+        onEnter: () => gsap.to(audio,{volume:1,duration:2,ease:'none',overwrite:true}),
+        onEnterBack: () => gsap.to(audio,{volume:1,duration:2,ease:'none',overwrite:true}),
+        onLeave: () => gsap.to(audio,{volume:0,duration:2,ease:'none',overwrite:true}),
+        onLeaveBack: () => gsap.to(audio,{volume:0,duration:2,ease:'none',overwrite:true})
+      });
     }
-  );
 
-  // Ambient audio volume control tied to scroll
-  if(audio){
-    audio.volume = 0;
-    // Attempt to start playback (muted) so we can fade later
-    audio.play().catch(()=>{});
-
-    ScrollTrigger.create({
-      trigger: panel,
-      start: 'top bottom',
-      end: 'bottom top',
-      onEnter: () => gsap.to(audio,{volume:1,duration:2,ease:'none',overwrite:true}),
-      onEnterBack: () => gsap.to(audio,{volume:1,duration:2,ease:'none',overwrite:true}),
-      onLeave: () => gsap.to(audio,{volume:0,duration:2,ease:'none',overwrite:true}),
-      onLeaveBack: () => gsap.to(audio,{volume:0,duration:2,ease:'none',overwrite:true})
+    // Touch / mouse interaction: gentle verse pulse
+    verse.addEventListener('pointerdown', () => {
+      gsap.fromTo(verse,{scale:1},{scale:1.06,duration:0.2,yoyo:true,repeat:1});
     });
-  }
-
-  // Touch / mouse interaction: gentle verse pulse
-  verse.addEventListener('pointerdown', () => {
-    gsap.fromTo(verse,{scale:1},{scale:1.06,duration:0.2,yoyo:true,repeat:1});
   });
-});
+
+  // Unlock audio handler remains same (it's independent)
+}
+
+// If ANIM_ENABLED false, basic interaction: allow verse text tap to focus
+if(!ANIM_ENABLED){
+  document.querySelectorAll('.verse').forEach(v=>{
+    v.addEventListener('pointerdown',()=>{
+      v.classList.toggle('highlight');
+    });
+  });
+}
 
 // Unlock audio on first touch/click (required by mobile browsers)
 function unlockAudio(){
@@ -164,6 +183,7 @@ function initWaterParticles(){
   if(!WEBGL_AVAILABLE) return;
   const canvas = document.getElementById('threeVerse2');
   if(!canvas || !canvas.getContext) return;
+  if(typeof THREE==='undefined') return;
 
   const renderer = createRenderer(canvas);
   const camera = createCamera(canvas);
@@ -196,6 +216,7 @@ function initStarField(){
   if(!WEBGL_AVAILABLE) return;
   const canvas = document.getElementById('threeVerse6');
   if(!canvas || !canvas.getContext) return;
+  if(typeof THREE==='undefined') return;
 
   const renderer = createRenderer(canvas);
   const camera = createCamera(canvas);
@@ -238,7 +259,7 @@ ScrollTrigger.create({
 });
 
 // ----------------- Device Tilt Parallax -----------------
-if(window.DeviceOrientationEvent){
+if(window.DeviceOrientationEvent && typeof THREE!=='undefined'){
   window.addEventListener('deviceorientation', (e)=>{
     const beta = e.beta || 0; // x tilt
     const gamma = e.gamma || 0; // y tilt
@@ -246,7 +267,6 @@ if(window.DeviceOrientationEvent){
     const xNorm = THREE.MathUtils.clamp(gamma/maxTilt,-1,1);
     const yNorm = THREE.MathUtils.clamp(beta/maxTilt,-1,1);
 
-    // rotate all verse texts subtly
     document.querySelectorAll('.verse').forEach(v=>{
       v.style.transform = `rotateX(${-yNorm*3}deg) rotateY(${xNorm*3}deg)`;
     });
