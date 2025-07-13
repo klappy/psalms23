@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Psalm 23 - An Immersive Journey</title>
+    <meta name="description" content="Experience the timeless comfort of Psalm 23 through an immersive visual journey">
+    <meta name="theme-color" content="#2c3e50">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500&display=swap" as="style">
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" as="script">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css">
+    
+    <!-- Three.js and related libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="loading-screen">
+        <div class="loader">
+            <div class="shepherd-staff"></div>
+            <div class="loading-text">Preparing your journey...</div>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div id="app" class="app">
+        <!-- Navigation -->
+        <nav class="nav-controls">
+            <button id="prev-btn" class="nav-btn" aria-label="Previous verse">‹</button>
+            <div class="verse-indicator">
+                <span id="current-verse">1</span> / <span id="total-verses">6</span>
+            </div>
+            <button id="next-btn" class="nav-btn" aria-label="Next verse">›</button>
+        </nav>
+
+        <!-- Settings Panel -->
+        <div id="settings-panel" class="settings-panel">
+            <button id="settings-btn" class="settings-btn" aria-label="Settings">⚙</button>
+            <div class="settings-content">
+                <label class="setting-item">
+                    <span>Audio</span>
+                    <input type="checkbox" id="audio-toggle" checked>
+                </label>
+                <label class="setting-item">
+                    <span>Auto-advance</span>
+                    <input type="checkbox" id="auto-advance" checked>
+                </label>
+                <label class="setting-item">
+                    <span>Ambient particles</span>
+                    <input type="checkbox" id="particles-toggle" checked>
+                </label>
+            </div>
+        </div>
+
+        <!-- 3D Scene Container -->
+        <div id="scene-container" class="scene-container"></div>
+
+        <!-- Content Overlay -->
+        <div id="content-overlay" class="content-overlay">
+            <div class="verse-content">
+                <h1 id="verse-title" class="verse-title"></h1>
+                <p id="verse-text" class="verse-text"></p>
+                <div id="verse-reflection" class="verse-reflection"></div>
+            </div>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="progress-container">
+            <div id="progress-bar" class="progress-bar"></div>
+        </div>
+
+        <!-- Touch Gesture Area -->
+        <div id="gesture-area" class="gesture-area"></div>
+    </div>
+
+    <!-- Audio Elements -->
+    <audio id="ambient-audio" loop>
+        <source src="audio/ambient.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Scripts -->
+    <script src="js/utils.js"></script>
+    <script src="js/audio.js"></script>
+    <script src="js/scenes.js"></script>
+    <script src="js/effects.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
