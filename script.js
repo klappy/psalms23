@@ -5,9 +5,11 @@ class PsalmScreensaver {
         this.verses = document.querySelectorAll('.verse');
         this.particles = document.querySelectorAll('.particle');
         this.backgroundLayers = document.querySelectorAll('.background-layer');
+        this.scrollProgress = document.querySelector('.scroll-progress');
+        this.scrollBar = document.querySelector('.scroll-bar');
         
         this.isAutoScrolling = false;
-        this.autoScrollSpeed = 0.5;
+        this.autoScrollSpeed = 1.2;
         this.lastScrollTime = 0;
         this.animationFrame = null;
         this.touchStartY = 0;
@@ -22,10 +24,17 @@ class PsalmScreensaver {
     init() {
         this.setupEventListeners();
         this.setupIntersectionObserver();
-        this.startAutoScroll();
         this.initParticleSystem();
         this.setupPerformanceOptimizations();
         this.preventZoom();
+        
+        // Start auto-scroll after a brief delay to ensure everything is loaded
+        setTimeout(() => {
+            this.startAutoScroll();
+            console.log('Auto-scroll started');
+            console.log('Content height:', this.scrollContainer.scrollHeight);
+            console.log('Container height:', this.scrollContainer.clientHeight);
+        }, 1000);
     }
     
     setupEventListeners() {
@@ -137,7 +146,7 @@ class PsalmScreensaver {
         this.interactionTimeout = setTimeout(() => {
             this.isUserInteracting = false;
             this.startAutoScroll();
-        }, 3000);
+        }, 2000);
     }
     
     applyMomentum() {
@@ -154,6 +163,7 @@ class PsalmScreensaver {
     
     handleScroll() {
         this.updateBackgroundLayers();
+        this.updateScrollProgress();
         
         // Check if we've reached the end
         const scrollTop = this.scrollContainer.scrollTop;
@@ -164,6 +174,22 @@ class PsalmScreensaver {
             setTimeout(() => {
                 this.restartExperience();
             }, 2000);
+        }
+    }
+    
+    updateScrollProgress() {
+        const scrollTop = this.scrollContainer.scrollTop;
+        const scrollHeight = this.scrollContainer.scrollHeight;
+        const clientHeight = this.scrollContainer.clientHeight;
+        const progress = (scrollTop / (scrollHeight - clientHeight)) * 100;
+        
+        this.scrollBar.style.height = `${Math.min(progress, 100)}%`;
+        
+        // Show progress indicator when scrolling
+        if (scrollTop > 50) {
+            this.scrollProgress.classList.add('visible');
+        } else {
+            this.scrollProgress.classList.remove('visible');
         }
     }
     
@@ -195,6 +221,7 @@ class PsalmScreensaver {
             
             this.scrollContainer.scrollTop += scrollAmount;
             this.updateBackgroundLayers();
+            this.updateScrollProgress();
             
             this.lastScrollTime = currentTime;
             this.animationFrame = requestAnimationFrame(autoScroll);
