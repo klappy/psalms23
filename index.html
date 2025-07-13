@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="format-detection" content="telephone=no">
+    <title>Psalm 23 - Immersive Experience</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Playfair+Display:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="screensaver-container">
+        <!-- 2.5D Scrolling Background -->
+        <div class="parallax-container">
+            <!-- Sky Layer -->
+            <div class="layer sky-layer">
+                <div class="clouds">
+                    <div class="cloud cloud-1"></div>
+                    <div class="cloud cloud-2"></div>
+                    <div class="cloud cloud-3"></div>
+                    <div class="cloud cloud-4"></div>
+                </div>
+                <div class="sun"></div>
+            </div>
+            
+            <!-- Mountains Layer -->
+            <div class="layer mountains-layer">
+                <div class="mountain mountain-1"></div>
+                <div class="mountain mountain-2"></div>
+                <div class="mountain mountain-3"></div>
+            </div>
+            
+            <!-- Hills Layer -->
+            <div class="layer hills-layer">
+                <div class="hill hill-1"></div>
+                <div class="hill hill-2"></div>
+                <div class="hill hill-3"></div>
+            </div>
+            
+            <!-- Valley Layer -->
+            <div class="layer valley-layer">
+                <div class="valley-ground"></div>
+                <div class="stream"></div>
+            </div>
+            
+            <!-- Foreground Elements -->
+            <div class="layer foreground-layer">
+                <div class="trees">
+                    <div class="tree tree-1"></div>
+                    <div class="tree tree-2"></div>
+                    <div class="tree tree-3"></div>
+                    <div class="tree tree-4"></div>
+                </div>
+                <div class="grass-patches">
+                    <div class="grass grass-1"></div>
+                    <div class="grass grass-2"></div>
+                    <div class="grass grass-3"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Text Overlay -->
+        <div class="text-overlay">
+            <div class="psalm-container">
+                <h1 class="psalm-title">Psalm 23</h1>
+                <div class="psalm-text">
+                    <p class="verse">The Lord is my shepherd, I shall not want.</p>
+                    <p class="verse">He makes me lie down in green pastures,</p>
+                    <p class="verse">he leads me beside quiet waters,</p>
+                    <p class="verse">he refreshes my soul.</p>
+                    <p class="verse">He guides me along the right paths</p>
+                    <p class="verse">for his name's sake.</p>
+                    <p class="verse">Even though I walk through the darkest valley,</p>
+                    <p class="verse">I will fear no evil, for you are with me;</p>
+                    <p class="verse">your rod and your staff, they comfort me.</p>
+                    <p class="verse">You prepare a table before me</p>
+                    <p class="verse">in the presence of my enemies.</p>
+                    <p class="verse">You anoint my head with oil;</p>
+                    <p class="verse">my cup overflows.</p>
+                    <p class="verse">Surely your goodness and love will follow me</p>
+                    <p class="verse">all the days of my life,</p>
+                    <p class="verse">and I will dwell in the house of the Lord forever.</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Controls -->
+        <div class="controls">
+            <button class="control-btn" id="pauseBtn">⏸</button>
+            <button class="control-btn" id="speedBtn">⚡</button>
+            <button class="control-btn" id="fullscreenBtn">⛶</button>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
