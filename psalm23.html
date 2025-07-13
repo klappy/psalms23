@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Psalm 23 - Immersive Journey</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            overflow: hidden;
+            background: #000;
+            color: white;
+        }
+        
+        #container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .ui {
+            position: fixed;
+            z-index: 1000;
+            pointer-events: none;
+        }
+        
+        .ui button, .ui .interactive {
+            pointer-events: all;
+        }
+        
+        .verse-display {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            max-width: 80%;
+            background: rgba(0,0,0,0.7);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .verse-title {
+            font-size: clamp(24px, 5vw, 36px);
+            font-weight: bold;
+            color: #FFD700;
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px rgba(255,215,0,0.5);
+        }
+        
+        .verse-text {
+            font-size: clamp(16px, 3vw, 20px);
+            line-height: 1.5;
+            margin-bottom: 15px;
+            font-style: italic;
+        }
+        
+        .verse-reflection {
+            font-size: clamp(14px, 2.5vw, 16px);
+            opacity: 0.8;
+            line-height: 1.4;
+        }
+        
+        .controls {
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            background: rgba(0,0,0,0.8);
+            padding: 15px 25px;
+            border-radius: 25px;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        
+        .nav-btn {
+            background: linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.1));
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            font-size: 20px;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .nav-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.1);
+        }
+        
+        .nav-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+        
+        .verse-counter {
+            color: white;
+            font-weight: bold;
+            min-width: 60px;
+            text-align: center;
+        }
+        
+        .settings {
+            top: 30px;
+            right: 30px;
+        }
+        
+        .settings-btn {
+            background: rgba(0,0,0,0.8);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            font-size: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .settings-btn:hover {
+            transform: rotate(90deg) scale(1.1);
+        }
+        
+        .settings-panel {
+            position: absolute;
+            top: 60px;
+            right: 0;
+            background: rgba(0,0,0,0.9);
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 10px;
+            padding: 20px;
+            min-width: 200px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+        
+        .settings.open .settings-panel {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+        
+        .toggle {
+            width: 40px;
+            height: 20px;
+            background: #333;
+            border-radius: 10px;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .toggle.active {
+            background: #4CAF50;
+        }
+        
+        .toggle::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 16px;
+            height: 16px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+        
+        .toggle.active::after {
+            transform: translateX(20px);
+        }
+        
+        .progress {
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: rgba(255,255,255,0.1);
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #FFD700, #FFA500);
+            width: 16.66%;
+            transition: width 0.5s ease;
+            box-shadow: 0 0 10px rgba(255,215,0,0.5);
+        }
+        
+        .loading {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            font-size: 18px;
+        }
+        
+        .loading::after {
+            content: '';
+            display: block;
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top: 3px solid #FFD700;
+            border-radius: 50%;
+            margin: 20px auto;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 768px) {
+            .controls {
+                bottom: 20px;
+                padding: 12px 20px;
+                gap: 15px;
+            }
+            
+            .nav-btn {
+                width: 40px;
+                height: 40px;
+                font-size: 18px;
+            }
+            
+            .verse-display {
+                padding: 25px 20px;
+                max-width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="container"></div>
+    
+    <!-- UI Elements -->
+    <div class="ui loading" id="loading">
+        Loading your spiritual journey...
+    </div>
+    
+    <div class="ui progress" id="progress">
+        <div class="progress-bar" id="progress-bar"></div>
+    </div>
+    
+    <div class="ui verse-display" id="verse-display" style="display: none;">
+        <div class="verse-title" id="verse-title"></div>
+        <div class="verse-text" id="verse-text"></div>
+        <div class="verse-reflection" id="verse-reflection"></div>
+    </div>
+    
+    <div class="ui controls" id="controls" style="display: none;">
+        <button class="nav-btn" id="prev-btn">‹</button>
+        <div class="verse-counter">
+            <span id="current-verse">1</span> / <span id="total-verses">6</span>
+        </div>
+        <button class="nav-btn" id="next-btn">›</button>
+    </div>
+    
+    <div class="ui settings" id="settings">
+        <button class="settings-btn">⚙</button>
+        <div class="settings-panel">
+            <div class="setting-item">
+                <span>Auto-advance</span>
+                <div class="toggle active interactive" id="auto-toggle"></div>
+            </div>
+            <div class="setting-item">
+                <span>Audio</span>
+                <div class="toggle active interactive" id="audio-toggle"></div>
+            </div>
+            <div class="setting-item">
+                <span>Particles</span>
+                <div class="toggle active interactive" id="particles-toggle"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <script>
+        class Psalm23Experience {
+            constructor() {
+                this.currentVerse = 0;
+                this.autoAdvance = true;
+                this.audioEnabled = true;
+                this.particlesEnabled = true;
+                this.autoTimer = null;
+                
+                this.verses = [
+                    {
+                        title: "The Lord is my shepherd",
+                        text: "The Lord is my shepherd; I shall not want.",
+                        reflection: "In God's care, we find complete provision and peace.",
+                        colors: { bg: 0x87CEEB, accent: 0x98FB98 }
+                    },
+                    {
+                        title: "Green pastures",
+                        text: "He makes me lie down in green pastures.",
+                        reflection: "In His presence, we find rest and renewal.",
+                        colors: { bg: 0x228B22, accent: 0x32CD32 }
+                    },
+                    {
+                        title: "Still waters",
+                        text: "He leads me beside quiet waters.",
+                        reflection: "His guidance brings us to places of peace and refreshment.",
+                        colors: { bg: 0x1E90FF, accent: 0x87CEEB }
+                    },
+                    {
+                        title: "Valley of shadows", 
+                        text: "Even though I walk through the valley of the shadow of death, I will fear no evil, for you are with me.",
+                        reflection: "In our darkest moments, His presence is our light.",
+                        colors: { bg: 0x2F4F4F, accent: 0xFFD700 }
+                    },
+                    {
+                        title: "Prepared table",
+                        text: "You prepare a table before me in the presence of my enemies; you anoint my head with oil; my cup overflows.",
+                        reflection: "God's abundance surrounds us even in difficult times.",
+                        colors: { bg: 0x8B4513, accent: 0xFF8C00 }
+                    },
+                    {
+                        title: "Eternal dwelling",
+                        text: "Surely goodness and mercy shall follow me all the days of my life, and I will dwell in the house of the Lord forever.",
+                        reflection: "God's love extends into eternity, our permanent home.",
+                        colors: { bg: 0xFFD700, accent: 0xFFA500 }
+                    }
+                ];
+                
+                this.scene = null;
+                this.camera = null;
+                this.renderer = null;
+                this.particles = [];
+                this.sceneObjects = [];
+                this.audioContext = null;
+                this.sounds = new Map();
+                
+                this.init();
+            }
+            
+            async init() {
+                try {
+                    this.setupThreeJS();
+                    this.setupAudio();
+                    this.setupUI();
+                    this.createScene();
+                    this.loadVerse(0);
+                    this.animate();
+                    
+                    // Hide loading
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('verse-display').style.display = 'block';
+                    document.getElementById('controls').style.display = 'flex';
+                    
+                    this.startAutoAdvance();
+                } catch (error) {
+                    console.error('Failed to initialize:', error);
+                    document.getElementById('loading').innerHTML = 'Failed to load. Please refresh the page.';
+                }
+            }
+            
+            setupThreeJS() {
+                const container = document.getElementById('container');
+                
+                // Scene
+                this.scene = new THREE.Scene();
+                
+                // Camera
+                this.camera = new THREE.PerspectiveCamera(
+                    75,
+                    window.innerWidth / window.innerHeight,
+                    0.1,
+                    1000
+                );
+                this.camera.position.set(0, 5, 10);
+                
+                // Renderer
+                this.renderer = new THREE.WebGLRenderer({ antialias: true });
+                this.renderer.setSize(window.innerWidth, window.innerHeight);
+                this.renderer.setClearColor(0x87CEEB);
+                this.renderer.shadowMap.enabled = true;
+                this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+                
+                container.appendChild(this.renderer.domElement);
+                
+                // Handle resize
+                window.addEventListener('resize', () => {
+                    this.camera.aspect = window.innerWidth / window.innerHeight;
+                    this.camera.updateProjectionMatrix();
+                    this.renderer.setSize(window.innerWidth, window.innerHeight);
+                });
+            }
+            
+            createScene() {
+                // Clear existing objects
+                this.sceneObjects.forEach(obj => this.scene.remove(obj));
+                this.sceneObjects = [];
+                
+                const verse = this.verses[this.currentVerse];
+                
+                // Change background
+                this.renderer.setClearColor(verse.colors.bg);
+                
+                // Add lighting
+                const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
+                this.scene.add(ambientLight);
+                this.sceneObjects.push(ambientLight);
+                
+                const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+                directionalLight.position.set(10, 10, 5);
+                directionalLight.castShadow = true;
+                this.scene.add(directionalLight);
+                this.sceneObjects.push(directionalLight);
+                
+                // Create scene content based on verse
+                switch (this.currentVerse) {
+                    case 0: this.createPastoralScene(); break;
+                    case 1: this.createMeadowScene(); break;
+                    case 2: this.createWaterScene(); break;
+                    case 3: this.createValleyScene(); break;
+                    case 4: this.createFeastScene(); break;
+                    case 5: this.createEternalScene(); break;
+                }
+                
+                // Add particles
+                if (this.particlesEnabled) {
+                    this.createParticles();
+                }
+            }
+            
+            createPastoralScene() {
+                // Ground
+                const groundGeometry = new THREE.PlaneGeometry(50, 50);
+                const groundMaterial = new THREE.MeshLambertMaterial({ color: 0x90EE90 });
+                const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+                ground.rotation.x = -Math.PI / 2;
+                ground.receiveShadow = true;
+                this.scene.add(ground);
+                this.sceneObjects.push(ground);
+                
+                // Create sheep
+                for (let i = 0; i < 5; i++) {
+                    const sheep = this.createSheep();
+                    sheep.position.set(
+                        (Math.random() - 0.5) * 20,
+                        0.5,
+                        (Math.random() - 0.5) * 20
+                    );
+                    this.scene.add(sheep);
+                    this.sceneObjects.push(sheep);
+                }
+                
+                // Shepherd staff
+                const staffGeometry = new THREE.CylinderGeometry(0.05, 0.05, 3);
+                const staffMaterial = new THREE.MeshPhongMaterial({ color: 0x8B4513 });
+                const staff = new THREE.Mesh(staffGeometry, staffMaterial);
+                staff.position.set(-8, 1.5, 0);
+                staff.castShadow = true;
+                this.scene.add(staff);
+                this.sceneObjects.push(staff);
+            }
+            
+            createMeadowScene() {
+                // Lush ground
+                const groundGeometry = new THREE.PlaneGeometry(60, 60);
+                const groundMaterial = new THREE.MeshLambertMaterial({ color: 0x228B22 });
+                const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+                ground.rotation.x = -Math.PI / 2;
+                this.scene.add(ground);
+                this.sceneObjects.push(ground);
+                
+                // Grass clumps
+                for (let i = 0; i < 50; i++) {
+                    const grassGeometry = new THREE.ConeGeometry(0.1, 1, 4);
+                    const grassMaterial = new THREE.MeshLambertMaterial({ color: 0x32CD32 });
+                    const grass = new THREE.Mesh(grassGeometry, grassMaterial);
+                    grass.position.set(
+                        (Math.random() - 0.5) * 50,
+                        0.5,
+                        (Math.random() - 0.5) * 50
+                    );
+                    this.scene.add(grass);
+                    this.sceneObjects.push(grass);
+                }
+                
+                // Flowers
+                for (let i = 0; i < 20; i++) {
+                    const flower = this.createFlower();
+                    flower.position.set(
+                        (Math.random() - 0.5) * 40,
+                        0.3,
+                        (Math.random() - 0.5) * 40
+                    );
+                    this.scene.add(flower);
+                    this.sceneObjects.push(flower);
+                }
+            }
+            
+            createWaterScene() {
+                // Water surface
+                const waterGeometry = new THREE.PlaneGeometry(80, 80, 32, 32);
+                const waterMaterial = new THREE.MeshPhongMaterial({ 
+                    color: 0x1E90FF,
+                    transparent: true,
+                    opacity: 0.8,
+                    shininess: 100
+                });
+                const water = new THREE.Mesh(waterGeometry, waterMaterial);
+                water.rotation.x = -Math.PI / 2;
+                this.scene.add(water);
+                this.sceneObjects.push(water);
+                
+                // Animate water
+                this.waterMesh = water;
+                
+                // Shore
+                const shoreGeometry = new THREE.PlaneGeometry(100, 20);
+                const shoreMaterial = new THREE.MeshLambertMaterial({ color: 0xD2B48C });
+                const shore = new THREE.Mesh(shoreGeometry, shoreMaterial);
+                shore.rotation.x = -Math.PI / 2;
+                shore.position.z = -50;
+                this.scene.add(shore);
+                this.sceneObjects.push(shore);
+                
+                // Reeds
+                for (let i = 0; i < 15; i++) {
+                    const reedGeometry = new THREE.CylinderGeometry(0.05, 0.05, 2);
+                    const reedMaterial = new THREE.MeshLambertMaterial({ color: 0x8FBC8F });
+                    const reed = new THREE.Mesh(reedGeometry, reedMaterial);
+                    reed.position.set(
+                        (Math.random() - 0.5) * 80,
+                        1,
+                        -35 + Math.random() * 10
+                    );
+                    this.scene.add(reed);
+                    this.sceneObjects.push(reed);
+                }
+            }
+            
+            createValleyScene() {
+                // Dark ground
+                const groundGeometry = new THREE.PlaneGeometry(100, 200);
+                const groundMaterial = new THREE.MeshLambertMaterial({ color: 0x2F4F4F });
+                const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+                ground.rotation.x = -Math.PI / 2;
+                this.scene.add(ground);
+                this.sceneObjects.push(ground);
+                
+                // Mountains
+                for (let i = 0; i < 8; i++) {
+                    const mountainGeometry = new THREE.ConeGeometry(
+                        Math.random() * 5 + 3,
+                        Math.random() * 15 + 10,
+                        8
+                    );
+                    const mountainMaterial = new THREE.MeshLambertMaterial({ color: 0x696969 });
+                    const mountain = new THREE.Mesh(mountainGeometry, mountainMaterial);
+                    mountain.position.set(
+                        (Math.random() - 0.5) * 80,
+                        Math.random() * 5 + 5,
+                        (Math.random() - 0.5) * 150
+                    );
+                    this.scene.add(mountain);
+                    this.sceneObjects.push(mountain);
+                }
+                
+                // Divine light
+                const lightGeometry = new THREE.CylinderGeometry(0, 3, 15, 8);
+                const lightMaterial = new THREE.MeshBasicMaterial({ 
+                    color: 0xFFD700,
+                    transparent: true,
+                    opacity: 0.6
+                });
+                const divineLight = new THREE.Mesh(lightGeometry, lightMaterial);
+                divineLight.position.set(0, 7.5, -20);
+                this.scene.add(divineLight);
+                this.sceneObjects.push(divineLight);
+                this.divineLight = divineLight;
+            }
+            
+            createFeastScene() {
+                // Table
+                const tableGeometry = new THREE.BoxGeometry(8, 0.2, 4);
+                const tableMaterial = new THREE.MeshPhongMaterial({ color: 0x8B4513 });
+                const table = new THREE.Mesh(tableGeometry, tableMaterial);
+                table.position.y = 2;
+                table.castShadow = true;
+                this.scene.add(table);
+                this.sceneObjects.push(table);
+                
+                // Feast items
+                for (let i = 0; i < 8; i++) {
+                    const itemGeometry = new THREE.SphereGeometry(0.3, 8, 6);
+                    const itemMaterial = new THREE.MeshPhongMaterial({ 
+                        color: [0xFF6347, 0xFFD700, 0x8B4513, 0xDC143C][Math.floor(Math.random() * 4)]
+                    });
+                    const item = new THREE.Mesh(itemGeometry, itemMaterial);
+                    item.position.set(
+                        (Math.random() - 0.5) * 6,
+                        2.5,
+                        (Math.random() - 0.5) * 3
+                    );
+                    item.castShadow = true;
+                    this.scene.add(item);
+                    this.sceneObjects.push(item);
+                }
+                
+                // Candles
+                for (let i = 0; i < 4; i++) {
+                    const candleGeometry = new THREE.CylinderGeometry(0.1, 0.1, 1);
+                    const candleMaterial = new THREE.MeshPhongMaterial({ color: 0xFFFFF0 });
+                    const candle = new THREE.Mesh(candleGeometry, candleMaterial);
+                    candle.position.set(
+                        (i - 1.5) * 2,
+                        2.7,
+                        0
+                    );
+                    this.scene.add(candle);
+                    this.sceneObjects.push(candle);
+                    
+                    // Flame
+                    const flameGeometry = new THREE.SphereGeometry(0.08, 6, 6);
+                    const flameMaterial = new THREE.MeshBasicMaterial({ color: 0xFF4500 });
+                    const flame = new THREE.Mesh(flameGeometry, flameMaterial);
+                    flame.position.copy(candle.position);
+                    flame.position.y += 0.6;
+                    this.scene.add(flame);
+                    this.sceneObjects.push(flame);
+                }
+            }
+            
+            createEternalScene() {
+                // Golden ground
+                const groundGeometry = new THREE.PlaneGeometry(100, 100);
+                const groundMaterial = new THREE.MeshLambertMaterial({ color: 0xFFD700 });
+                const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+                ground.rotation.x = -Math.PI / 2;
+                this.scene.add(ground);
+                this.sceneObjects.push(ground);
+                
+                // Pillars
+                for (let i = 0; i < 8; i++) {
+                    const pillarGeometry = new THREE.CylinderGeometry(0.5, 0.5, 8);
+                    const pillarMaterial = new THREE.MeshPhongMaterial({ 
+                        color: 0xDAA520,
+                        shininess: 100
+                    });
+                    const pillar = new THREE.Mesh(pillarGeometry, pillarMaterial);
+                    const angle = (i / 8) * Math.PI * 2;
+                    pillar.position.set(
+                        Math.sin(angle) * 12,
+                        4,
+                        Math.cos(angle) * 12
+                    );
+                    pillar.castShadow = true;
+                    this.scene.add(pillar);
+                    this.sceneObjects.push(pillar);
+                }
+                
+                // Central throne
+                const throneGeometry = new THREE.BoxGeometry(2, 3, 2);
+                const throneMaterial = new THREE.MeshPhongMaterial({ 
+                    color: 0xFFD700,
+                    shininess: 150
+                });
+                const throne = new THREE.Mesh(throneGeometry, throneMaterial);
+                throne.position.set(0, 1.5, 0);
+                throne.castShadow = true;
+                this.scene.add(throne);
+                this.sceneObjects.push(throne);
+            }
+            
+            createSheep() {
+                const group = new THREE.Group();
+                
+                // Body
+                const bodyGeometry = new THREE.SphereGeometry(0.6, 8, 6);
+                const bodyMaterial = new THREE.MeshLambertMaterial({ color: 0xFFFFF0 });
+                const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+                body.position.y = 0.3;
+                body.castShadow = true;
+                group.add(body);
+                
+                // Head
+                const headGeometry = new THREE.SphereGeometry(0.3, 8, 6);
+                const head = new THREE.Mesh(headGeometry, bodyMaterial);
+                head.position.set(0, 0.6, 0.6);
+                head.castShadow = true;
+                group.add(head);
+                
+                return group;
+            }
+            
+            createFlower() {
+                const group = new THREE.Group();
+                
+                // Stem
+                const stemGeometry = new THREE.CylinderGeometry(0.02, 0.02, 0.5);
+                const stemMaterial = new THREE.MeshLambertMaterial({ color: 0x228B22 });
+                const stem = new THREE.Mesh(stemGeometry, stemMaterial);
+                stem.position.y = 0.25;
+                group.add(stem);
+                
+                // Flower
+                const flowerGeometry = new THREE.SphereGeometry(0.1, 6, 6);
+                const colors = [0xFF69B4, 0xFFFF00, 0xFF4500, 0x9370DB];
+                const flowerMaterial = new THREE.MeshLambertMaterial({ 
+                    color: colors[Math.floor(Math.random() * colors.length)]
+                });
+                const flower = new THREE.Mesh(flowerGeometry, flowerMaterial);
+                flower.position.y = 0.5;
+                group.add(flower);
+                
+                return group;
+            }
+            
+            createParticles() {
+                // Clear existing particles
+                this.particles.forEach(p => this.scene.remove(p));
+                this.particles = [];
+                
+                for (let i = 0; i < 50; i++) {
+                    const particleGeometry = new THREE.SphereGeometry(0.02, 4, 4);
+                    const particleMaterial = new THREE.MeshBasicMaterial({ 
+                        color: 0xFFFFFF,
+                        transparent: true,
+                        opacity: 0.7
+                    });
+                    const particle = new THREE.Mesh(particleGeometry, particleMaterial);
+                    
+                    particle.position.set(
+                        (Math.random() - 0.5) * 100,
+                        Math.random() * 20,
+                        (Math.random() - 0.5) * 100
+                    );
+                    
+                    particle.userData = {
+                        velocity: new THREE.Vector3(
+                            (Math.random() - 0.5) * 0.02,
+                            Math.random() * 0.02 + 0.01,
+                            (Math.random() - 0.5) * 0.02
+                        )
+                    };
+                    
+                    this.scene.add(particle);
+                    this.particles.push(particle);
+                }
+            }
+            
+            setupAudio() {
+                try {
+                    this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    console.log('Audio initialized');
+                } catch (error) {
+                    console.warn('Audio not available:', error);
+                    this.audioEnabled = false;
+                }
+            }
+            
+            setupUI() {
+                // Navigation
+                document.getElementById('prev-btn').addEventListener('click', () => this.previousVerse());
+                document.getElementById('next-btn').addEventListener('click', () => this.nextVerse());
+                
+                // Settings
+                document.querySelector('.settings-btn').addEventListener('click', () => {
+                    document.getElementById('settings').classList.toggle('open');
+                });
+                
+                // Toggles
+                document.getElementById('auto-toggle').addEventListener('click', () => this.toggleAutoAdvance());
+                document.getElementById('audio-toggle').addEventListener('click', () => this.toggleAudio());
+                document.getElementById('particles-toggle').addEventListener('click', () => this.toggleParticles());
+                
+                // Touch gestures
+                let startX = 0;
+                document.addEventListener('touchstart', (e) => {
+                    startX = e.touches[0].clientX;
+                }, { passive: true });
+                
+                document.addEventListener('touchend', (e) => {
+                    const endX = e.changedTouches[0].clientX;
+                    const diff = startX - endX;
+                    
+                    if (Math.abs(diff) > 50) {
+                        if (diff > 0) {
+                            this.nextVerse();
+                        } else {
+                            this.previousVerse();
+                        }
+                    }
+                }, { passive: true });
+                
+                // Keyboard
+                document.addEventListener('keydown', (e) => {
+                    switch (e.key) {
+                        case 'ArrowLeft':
+                            this.previousVerse();
+                            break;
+                        case 'ArrowRight':
+                        case ' ':
+                            e.preventDefault();
+                            this.nextVerse();
+                            break;
+                    }
+                });
+                
+                // Click anywhere to advance
+                document.getElementById('verse-display').addEventListener('click', () => {
+                    this.nextVerse();
+                });
+            }
+            
+            loadVerse(index) {
+                if (index < 0 || index >= this.verses.length) return;
+                
+                this.currentVerse = index;
+                const verse = this.verses[index];
+                
+                // Update UI
+                document.getElementById('verse-title').textContent = verse.title;
+                document.getElementById('verse-text').textContent = verse.text;
+                document.getElementById('verse-reflection').textContent = verse.reflection;
+                document.getElementById('current-verse').textContent = index + 1;
+                
+                // Update progress
+                const progress = ((index + 1) / this.verses.length) * 100;
+                document.getElementById('progress-bar').style.width = progress + '%';
+                
+                // Update navigation
+                document.getElementById('prev-btn').disabled = index === 0;
+                document.getElementById('next-btn').disabled = index === this.verses.length - 1;
+                
+                // Update 3D scene
+                this.createScene();
+                
+                console.log(`Loaded verse ${index + 1}: ${verse.title}`);
+            }
+            
+            nextVerse() {
+                if (this.currentVerse < this.verses.length - 1) {
+                    this.loadVerse(this.currentVerse + 1);
+                }
+                this.restartAutoAdvance();
+            }
+            
+            previousVerse() {
+                if (this.currentVerse > 0) {
+                    this.loadVerse(this.currentVerse - 1);
+                }
+                this.restartAutoAdvance();
+            }
+            
+            toggleAutoAdvance() {
+                this.autoAdvance = !this.autoAdvance;
+                document.getElementById('auto-toggle').classList.toggle('active', this.autoAdvance);
+                
+                if (this.autoAdvance) {
+                    this.startAutoAdvance();
+                } else {
+                    this.stopAutoAdvance();
+                }
+            }
+            
+            toggleAudio() {
+                this.audioEnabled = !this.audioEnabled;
+                document.getElementById('audio-toggle').classList.toggle('active', this.audioEnabled);
+            }
+            
+            toggleParticles() {
+                this.particlesEnabled = !this.particlesEnabled;
+                document.getElementById('particles-toggle').classList.toggle('active', this.particlesEnabled);
+                
+                if (this.particlesEnabled) {
+                    this.createParticles();
+                } else {
+                    this.particles.forEach(p => this.scene.remove(p));
+                    this.particles = [];
+                }
+            }
+            
+            startAutoAdvance() {
+                if (!this.autoAdvance) return;
+                this.autoTimer = setTimeout(() => {
+                    this.nextVerse();
+                }, 8000); // 8 seconds per verse
+            }
+            
+            stopAutoAdvance() {
+                if (this.autoTimer) {
+                    clearTimeout(this.autoTimer);
+                    this.autoTimer = null;
+                }
+            }
+            
+            restartAutoAdvance() {
+                this.stopAutoAdvance();
+                if (this.autoAdvance) {
+                    this.startAutoAdvance();
+                }
+            }
+            
+            animate() {
+                requestAnimationFrame(() => this.animate());
+                
+                const time = Date.now() * 0.001;
+                
+                // Animate particles
+                this.particles.forEach(particle => {
+                    particle.position.add(particle.userData.velocity);
+                    
+                    // Reset if too high
+                    if (particle.position.y > 30) {
+                        particle.position.y = 0;
+                        particle.position.x = (Math.random() - 0.5) * 100;
+                        particle.position.z = (Math.random() - 0.5) * 100;
+                    }
+                });
+                
+                // Animate water
+                if (this.waterMesh) {
+                    const positions = this.waterMesh.geometry.attributes.position.array;
+                    for (let i = 1; i < positions.length; i += 3) {
+                        positions[i] = Math.sin(time * 2 + positions[i - 1] * 0.5) * 0.1;
+                    }
+                    this.waterMesh.geometry.attributes.position.needsUpdate = true;
+                }
+                
+                // Animate divine light
+                if (this.divineLight) {
+                    this.divineLight.material.opacity = 0.6 + Math.sin(time * 3) * 0.2;
+                }
+                
+                // Gentle camera movement
+                this.camera.position.x = Math.sin(time * 0.1) * 2;
+                this.camera.position.y = 5 + Math.sin(time * 0.15) * 1;
+                this.camera.lookAt(0, 0, 0);
+                
+                this.renderer.render(this.scene, this.camera);
+            }
+        }
+        
+        // Wait for user interaction on mobile
+        function startExperience() {
+            new Psalm23Experience();
+        }
+        
+        if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+            document.addEventListener('click', startExperience, { once: true });
+            document.addEventListener('touchstart', startExperience, { once: true });
+            
+            document.getElementById('loading').innerHTML = `
+                <div style="text-align: center;">
+                    <h3 style="color: #FFD700; margin-bottom: 15px;">🙏 Psalm 23 Journey</h3>
+                    <p>Tap anywhere to begin your immersive 3D experience</p>
+                </div>
+            `;
+        } else {
+            document.addEventListener('DOMContentLoaded', startExperience);
+        }
+    </script>
+</body>
+</html>
