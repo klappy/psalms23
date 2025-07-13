@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Psalm 23 - The Lord is My Shepherd</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: #000;
+            color: #fff;
+            overflow-x: hidden;
+            cursor: none;
+        }
+
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        #content {
+            position: relative;
+            z-index: 2;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .verse-container {
+            max-width: 90%;
+            padding: 2rem;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin: 2rem auto;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+
+        .verse-container.active {
+            opacity: 1;
+        }
+
+        h1 {
+            font-size: clamp(2rem, 5vw, 4rem);
+            margin-bottom: 2rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+            color: #f0f0f0;
+        }
+
+        .verse {
+            font-size: clamp(1.2rem, 3vw, 2rem);
+            line-height: 1.6;
+            margin-bottom: 2rem;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+            color: #e0e0e0;
+        }
+
+        .verse-number {
+            font-size: clamp(0.9rem, 2vw, 1.2rem);
+            color: #ccc;
+            margin-bottom: 1rem;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 3;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-btn {
+            padding: 0.8rem 1.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 25px;
+            color: #fff;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 3px;
+            background: linear-gradient(90deg, #4CAF50, #2196F3);
+            transition: width 0.5s ease;
+            z-index: 4;
+        }
+
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 5;
+            transition: opacity 1s ease-out;
+        }
+
+        .loading-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loader {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top: 3px solid #fff;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .verse-container {
+                max-width: 95%;
+                padding: 1.5rem;
+            }
+            
+            .navigation {
+                bottom: 1rem;
+                gap: 0.5rem;
+            }
+            
+            .nav-btn {
+                padding: 0.6rem 1rem;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-screen" id="loading">
+        <div class="loader"></div>
+    </div>
+    
+    <div class="progress-bar" id="progress"></div>
+    
+    <div id="canvas-container"></div>
+    
+    <div id="content">
+        <div class="verse-container active" id="verse-0">
+            <h1>Psalm 23</h1>
+            <div class="verse">A Psalm of David</div>
+            <div class="verse">The Lord is my shepherd; I shall not want.</div>
+        </div>
+        
+        <div class="verse-container" id="verse-1">
+            <div class="verse-number">Verse 2</div>
+            <div class="verse">He makes me lie down in green pastures;<br>
+            he leads me beside quiet waters.</div>
+        </div>
+        
+        <div class="verse-container" id="verse-2">
+            <div class="verse-number">Verse 3</div>
+            <div class="verse">He refreshes my soul.<br>
+            He guides me along the right paths<br>
+            for his name's sake.</div>
+        </div>
+        
+        <div class="verse-container" id="verse-3">
+            <div class="verse-number">Verse 4</div>
+            <div class="verse">Even though I walk through the darkest valley,<br>
+            I will fear no evil, for you are with me;<br>
+            your rod and your staff, they comfort me.</div>
+        </div>
+        
+        <div class="verse-container" id="verse-4">
+            <div class="verse-number">Verse 5</div>
+            <div class="verse">You prepare a table before me<br>
+            in the presence of my enemies;<br>
+            you anoint my head with oil;<br>
+            my cup overflows.</div>
+        </div>
+        
+        <div class="verse-container" id="verse-5">
+            <div class="verse-number">Verse 6</div>
+            <div class="verse">Surely your goodness and love will follow me<br>
+            all the days of my life,<br>
+            and I will dwell in the house of the Lord<br>
+            forever.</div>
+        </div>
+    </div>
+    
+    <div class="navigation">
+        <button class="nav-btn" id="prevBtn" onclick="previousVerse()">← Previous</button>
+        <button class="nav-btn" id="nextBtn" onclick="nextVerse()">Next →</button>
+        <button class="nav-btn" id="autoBtn" onclick="toggleAutoPlay()">Auto Play</button>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="script.js"></script>
+    <script src="enhanced-script.js"></script>
+</body>
+</html>
