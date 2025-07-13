@@ -18,3 +18,28 @@ html,body{height:100%;width:100%;overflow-x:hidden;font-family:'Montserrat',sans
 @media (orientation:landscape) and (max-height:500px){
   .verse{font-size:clamp(1rem,3vw,2rem);} 
 }
+
+/* ---- Ambient animations ---- */
+.water{
+  animation:waterFlow 20s linear infinite;
+}
+@keyframes waterFlow{
+  0%{background-position:center 0;}
+  100%{background-position:center 100px;}
+}
+
+/* Fog overlay for valley scene */
+.fog{
+  position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;
+  background:radial-gradient(circle at 50% 50%,rgba(0,0,0,0.25) 0%,rgba(0,0,0,0.85) 70%);
+  opacity:0.8;
+  animation:fogDrift 12s ease-in-out infinite alternate;
+  mix-blend-mode:overlay;
+}
+@keyframes fogDrift{
+  0%{transform:translateY(-3%);}
+  100%{transform:translateY(3%);}
+}
+
+/* Interactive verse tap scaling */
+.verse{transition:transform 0.2s;}
