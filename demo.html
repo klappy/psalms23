@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Psalm 23 Demo - Immersive Experience</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+        }
+
+        .demo-section {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 2rem 0;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .launch-btn {
+            display: inline-block;
+            background: linear-gradient(45deg, #4CAF50, #2196F3);
+            color: white;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: transform 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .launch-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .feature-card {
+            background: rgba(255,255,255,0.1);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .verse-preview {
+            background: rgba(0,0,0,0.3);
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            border-left: 4px solid #4CAF50;
+        }
+
+        .tech-stack {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin: 1rem 0;
+        }
+
+        .tech-badge {
+            background: rgba(255,255,255,0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .instructions {
+            background: rgba(255,255,255,0.05);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 2rem 0;
+        }
+
+        .instructions h3 {
+            color: #4CAF50;
+            margin-bottom: 1rem;
+        }
+
+        .instructions ul {
+            padding-left: 1.5rem;
+        }
+
+        .instructions li {
+            margin: 0.5rem 0;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🐑 Psalm 23 - The Lord is My Shepherd</h1>
+            <p class="subtitle">An immersive 3D visualization experience</p>
+            <a href="index.html" class="launch-btn">🚀 Launch Experience</a>
+        </header>
+
+        <div class="demo-section">
+            <h2>✨ Experience Overview</h2>
+            <p>Journey through the beloved Psalm 23 with stunning 3D environments, dynamic lighting, and smooth transitions. Each verse comes to life with its own unique visual representation, creating an immersive meditation experience perfect for church services, personal devotion, or group study.</p>
+            
+            <div class="verse-preview">
+                <strong>"The Lord is my shepherd, I shall not want. He makes me lie down in green pastures; he leads me beside quiet waters..."</strong>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h2>🎨 Key Features</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🌅</div>
+                    <h3>Dynamic Environments</h3>
+                    <p>Each verse features a unique 3D scene with appropriate lighting, colors, and atmospheric effects.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">📱</div>
+                    <h3>Mobile Optimized</h3>
+                    <p>Responsive design with touch controls and automatic performance optimization for mobile devices.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🎬</div>
+                    <h3>Smooth Animations</h3>
+                    <p>TWEEN-based transitions create cinematic movement between verses and scenes.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Performance Smart</h3>
+                    <p>Automatic optimization based on device capabilities ensures smooth performance.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h2>🎬 Verse Journey</h2>
+            <div class="verse-preview">
+                <strong>Verse 1:</strong> "The Lord is my shepherd" - Green pastures with sheep and trees
+            </div>
+            <div class="verse-preview">
+                <strong>Verse 2:</strong> "He leads me beside quiet waters" - Serene water with gentle ripples
+            </div>
+            <div class="verse-preview">
+                <strong>Verse 3:</strong> "He guides me along the right paths" - Winding path through landscape
+            </div>
+            <div class="verse-preview">
+                <strong>Verse 4:</strong> "Through the darkest valley" - Dramatic mountains with fog
+            </div>
+            <div class="verse-preview">
+                <strong>Verse 5:</strong> "You prepare a table before me" - Feast table with golden cup
+            </div>
+            <div class="verse-preview">
+                <strong>Verse 6:</strong> "I will dwell in the house of the Lord" - Heavenly temple with pillars
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h2>🛠️ Technical Stack</h2>
+            <div class="tech-stack">
+                <span class="tech-badge">Three.js</span>
+                <span class="tech-badge">WebGL</span>
+                <span class="tech-badge">Custom TWEEN</span>
+                <span class="tech-badge">Responsive CSS</span>
+                <span class="tech-badge">Performance Optimization</span>
+                <span class="tech-badge">Mobile Touch Support</span>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h2>📖 Usage Instructions</h2>
+            
+            <div class="instructions">
+                <h3>🖥️ Desktop Controls</h3>
+                <ul>
+                    <li>Use <strong>Arrow Keys</strong> or <strong>Spacebar</strong> to navigate</li>
+                    <li>Click <strong>Previous/Next</strong> buttons</li>
+                    <li>Enable <strong>Auto Play</strong> for automatic progression</li>
+                    <li>Press <strong>Home/End</strong> to jump to first/last verse</li>
+                </ul>
+            </div>
+
+            <div class="instructions">
+                <h3>📱 Mobile Controls</h3>
+                <ul>
+                    <li><strong>Swipe left/right</strong> to navigate between verses</li>
+                    <li>Tap navigation buttons for manual control</li>
+                    <li>Best experienced in <strong>landscape mode</strong></li>
+                    <li>Automatic optimization for smooth performance</li>
+                </ul>
+            </div>
+
+            <div class="instructions">
+                <h3>⛪ Church Usage</h3>
+                <ul>
+                    <li>Perfect for <strong>sermon illustration</strong> during Psalm 23 teachings</li>
+                    <li>Use <strong>Auto Play</strong> for meditation sessions</li>
+                    <li>Project on screens for <strong>congregational viewing</strong></li>
+                    <li>Share link for <strong>personal devotion</strong></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h2>🌟 Special Features</h2>
+            <ul>
+                <li><strong>Roku-style Scrolling Background:</strong> Subtle biblical imagery (crosses, doves, stars) scrolls in the background</li>
+                <li><strong>Dynamic Sky Gradients:</strong> Sky colors change to match the mood of each verse</li>
+                <li><strong>Particle Effects:</strong> Heavenly particles, water ripples, and golden cup overflow</li>
+                <li><strong>Atmospheric Lighting:</strong> Lighting adapts to create the appropriate mood</li>
+                <li><strong>Performance Monitoring:</strong> Automatic optimization based on device performance</li>
+                <li><strong>Shadow Mapping:</strong> Realistic shadows on capable devices</li>
+            </ul>
+        </div>
+
+        <div class="demo-section">
+            <h2>🚀 Ready to Experience?</h2>
+            <p>Click the button below to launch the full immersive Psalm 23 experience. Allow a moment for the 3D assets to load, then enjoy the journey through this beloved psalm.</p>
+            <br>
+            <a href="index.html" class="launch-btn">🎬 Launch Full Experience</a>
+        </div>
+    </div>
+</body>
+</html>
