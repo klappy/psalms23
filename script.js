@@ -83,12 +83,26 @@ if(window.matchMedia('(pointer:fine)').matches){
 }
 
 // ----------------- Loader Handling -----------------
-window.addEventListener('load', () => {
-  // Fake little delay to show loader for slower connections
-  setTimeout(()=>{
-    document.getElementById('loader').classList.add('hidden');
-  }, 800);
+const loaderEl = document.getElementById('loader');
+function hideLoader(){ loaderEl?.classList.add('hidden'); }
+
+// Hide shortly after DOM ready (don’t wait for slow external media)
+document.addEventListener('DOMContentLoaded',()=>{
+  setTimeout(hideLoader,1200);
 });
+
+// Ensure it also hides once full page finished
+window.addEventListener('load', hideLoader);
+
+// Fallback after 10 s – allow user to continue
+setTimeout(()=>{
+  if(!loaderEl.classList.contains('hidden')){
+    loaderEl.classList.add('interactive');
+    const progress=loaderEl.querySelector('.progress');
+    if(progress) progress.textContent='Still loading… tap to continue';
+    loaderEl.addEventListener('click', hideLoader, {once:true});
+  }
+}, 10000);
 
 // ----------------- Three.js Helpers -----------------
 function createRenderer(canvas){
