@@ -380,6 +380,13 @@
                     document.getElementById('controls').style.display = 'flex';
                     
                     this.startAutoAdvance();
+                    
+                    // Ensure audio starts on mobile after user interaction
+                    if (this.audioContext && this.audioContext.state === 'suspended') {
+                        this.audioContext.resume().then(() => {
+                            console.log('Audio context resumed');
+                        });
+                    }
                 } catch (error) {
                     console.error('Failed to initialize:', error);
                     document.getElementById('loading').innerHTML = 'Failed to load. Please refresh the page.';
@@ -777,11 +784,226 @@
             setupAudio() {
                 try {
                     this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    this.masterGain = this.audioContext.createGain();
+                    this.masterGain.connect(this.audioContext.destination);
+                    this.masterGain.gain.value = 0.3;
+                    
+                    this.currentAudioNodes = [];
                     console.log('Audio initialized');
                 } catch (error) {
                     console.warn('Audio not available:', error);
                     this.audioEnabled = false;
                 }
+            }
+            
+            createSceneAudio() {
+                if (!this.audioEnabled || !this.audioContext) return;
+                
+                // Stop current audio
+                this.stopAudio();
+                
+                // Resume audio context if suspended (mobile requirement)
+                if (this.audioContext.state === 'suspended') {
+                    this.audioContext.resume();
+                }
+                
+                const verse = this.verses[this.currentVerse];
+                
+                switch (this.currentVerse) {
+                    case 0: this.createPastoralAudio(); break;
+                    case 1: this.createMeadowAudio(); break;
+                    case 2: this.createWaterAudio(); break;
+                    case 3: this.createValleyAudio(); break;
+                    case 4: this.createFeastAudio(); break;
+                    case 5: this.createEternalAudio(); break;
+                }
+            }
+            
+            createPastoralAudio() {
+                // Gentle wind sound
+                const windOscillator = this.audioContext.createOscillator();
+                const windGain = this.audioContext.createGain();
+                const windFilter = this.audioContext.createBiquadFilter();
+                
+                windOscillator.type = 'sawtooth';
+                windOscillator.frequency.value = 80;
+                windFilter.type = 'lowpass';
+                windFilter.frequency.value = 200;
+                windGain.gain.value = 0.1;
+                
+                windOscillator.connect(windFilter);
+                windFilter.connect(windGain);
+                windGain.connect(this.masterGain);
+                
+                windOscillator.start();
+                this.currentAudioNodes.push(windOscillator);
+                
+                // Soft sheep sounds (bleating)
+                this.createPeriodicTone(220, 0.08, 3000, 'triangle');
+                this.createPeriodicTone(180, 0.06, 4000, 'triangle');
+            }
+            
+            createMeadowAudio() {
+                // Birds chirping
+                this.createPeriodicTone(800, 0.1, 2000, 'sine');
+                this.createPeriodicTone(1200, 0.08, 2500, 'sine');
+                this.createPeriodicTone(600, 0.06, 3000, 'sine');
+                
+                // Gentle breeze
+                const breezeOscillator = this.audioContext.createOscillator();
+                const breezeGain = this.audioContext.createGain();
+                const breezeFilter = this.audioContext.createBiquadFilter();
+                
+                breezeOscillator.type = 'sawtooth';
+                breezeOscillator.frequency.value = 60;
+                breezeFilter.type = 'highpass';
+                breezeFilter.frequency.value = 100;
+                breezeGain.gain.value = 0.05;
+                
+                breezeOscillator.connect(breezeFilter);
+                breezeFilter.connect(breezeGain);
+                breezeGain.connect(this.masterGain);
+                
+                breezeOscillator.start();
+                this.currentAudioNodes.push(breezeOscillator);
+            }
+            
+            createWaterAudio() {
+                // Water flowing sound
+                const waterOscillator = this.audioContext.createOscillator();
+                const waterGain = this.audioContext.createGain();
+                const waterFilter = this.audioContext.createBiquadFilter();
+                
+                waterOscillator.type = 'sawtooth';
+                waterOscillator.frequency.value = 300;
+                waterFilter.type = 'bandpass';
+                waterFilter.frequency.value = 400;
+                waterFilter.Q.value = 0.5;
+                waterGain.gain.value = 0.15;
+                
+                waterOscillator.connect(waterFilter);
+                waterFilter.connect(waterGain);
+                waterGain.connect(this.masterGain);
+                
+                waterOscillator.start();
+                this.currentAudioNodes.push(waterOscillator);
+                
+                // Gentle water drops
+                this.createPeriodicTone(500, 0.12, 1500, 'sine');
+                this.createPeriodicTone(700, 0.10, 2000, 'sine');
+            }
+            
+            createValleyAudio() {
+                // Deep, resonant tones for the valley
+                const valleyOscillator = this.audioContext.createOscillator();
+                const valleyGain = this.audioContext.createGain();
+                const valleyFilter = this.audioContext.createBiquadFilter();
+                
+                valleyOscillator.type = 'sine';
+                valleyOscillator.frequency.value = 40;
+                valleyFilter.type = 'lowpass';
+                valleyFilter.frequency.value = 150;
+                valleyGain.gain.value = 0.2;
+                
+                valleyOscillator.connect(valleyFilter);
+                valleyFilter.connect(valleyGain);
+                valleyGain.connect(this.masterGain);
+                
+                valleyOscillator.start();
+                this.currentAudioNodes.push(valleyOscillator);
+                
+                // Divine light chimes
+                this.createPeriodicTone(528, 0.15, 4000, 'sine'); // "Healing frequency"
+                this.createPeriodicTone(396, 0.12, 5000, 'sine'); // "Liberation frequency"
+            }
+            
+            createFeastAudio() {
+                // Warm, festive ambience
+                const feastOscillator = this.audioContext.createOscillator();
+                const feastGain = this.audioContext.createGain();
+                const feastFilter = this.audioContext.createBiquadFilter();
+                
+                feastOscillator.type = 'triangle';
+                feastOscillator.frequency.value = 220;
+                feastFilter.type = 'lowpass';
+                feastFilter.frequency.value = 800;
+                feastGain.gain.value = 0.1;
+                
+                feastOscillator.connect(feastFilter);
+                feastFilter.connect(feastGain);
+                feastGain.connect(this.masterGain);
+                
+                feastOscillator.start();
+                this.currentAudioNodes.push(feastOscillator);
+                
+                // Gentle celebration tones
+                this.createPeriodicTone(440, 0.08, 3000, 'sine');
+                this.createPeriodicTone(330, 0.06, 3500, 'sine');
+            }
+            
+            createEternalAudio() {
+                // Heavenly, ethereal sounds
+                const eternalOscillator = this.audioContext.createOscillator();
+                const eternalGain = this.audioContext.createGain();
+                const eternalFilter = this.audioContext.createBiquadFilter();
+                
+                eternalOscillator.type = 'sine';
+                eternalOscillator.frequency.value = 432; // "Sacred frequency"
+                eternalFilter.type = 'lowpass';
+                eternalFilter.frequency.value = 1000;
+                eternalGain.gain.value = 0.15;
+                
+                eternalOscillator.connect(eternalFilter);
+                eternalFilter.connect(eternalGain);
+                eternalGain.connect(this.masterGain);
+                
+                eternalOscillator.start();
+                this.currentAudioNodes.push(eternalOscillator);
+                
+                // Angelic choir-like tones
+                this.createPeriodicTone(648, 0.1, 2000, 'sine');
+                this.createPeriodicTone(852, 0.08, 2500, 'sine');
+                this.createPeriodicTone(741, 0.06, 3000, 'sine');
+            }
+            
+            createPeriodicTone(frequency, volume, interval, waveType = 'sine') {
+                const playTone = () => {
+                    if (!this.audioEnabled || !this.audioContext) return;
+                    
+                    const oscillator = this.audioContext.createOscillator();
+                    const gainNode = this.audioContext.createGain();
+                    
+                    oscillator.type = waveType;
+                    oscillator.frequency.value = frequency;
+                    
+                    gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
+                    gainNode.gain.linearRampToValueAtTime(volume, this.audioContext.currentTime + 0.1);
+                    gainNode.gain.exponentialRampToValueAtTime(0.001, this.audioContext.currentTime + 0.8);
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(this.masterGain);
+                    
+                    oscillator.start();
+                    oscillator.stop(this.audioContext.currentTime + 0.8);
+                };
+                
+                // Play immediately
+                playTone();
+                
+                // Set up periodic playing
+                const intervalId = setInterval(playTone, interval);
+                this.currentAudioNodes.push({ stop: () => clearInterval(intervalId) });
+            }
+            
+            stopAudio() {
+                this.currentAudioNodes.forEach(node => {
+                    if (node.stop) {
+                        node.stop();
+                    } else if (typeof node === 'object' && node.stop) {
+                        node.stop();
+                    }
+                });
+                this.currentAudioNodes = [];
             }
             
             setupUI() {
@@ -861,6 +1083,9 @@
                 // Update 3D scene
                 this.createScene();
                 
+                // Create scene audio
+                this.createSceneAudio();
+                
                 console.log(`Loaded verse ${index + 1}: ${verse.title}`);
             }
             
@@ -892,6 +1117,12 @@
             toggleAudio() {
                 this.audioEnabled = !this.audioEnabled;
                 document.getElementById('audio-toggle').classList.toggle('active', this.audioEnabled);
+                
+                if (this.audioEnabled) {
+                    this.createSceneAudio();
+                } else {
+                    this.stopAudio();
+                }
             }
             
             toggleParticles() {
@@ -969,8 +1200,15 @@
         
         // Wait for user interaction on mobile
         function startExperience() {
-            new Psalm23Experience();
+            window.psalm23Experience = new Psalm23Experience();
         }
+        
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', () => {
+            if (window.psalm23Experience) {
+                window.psalm23Experience.stopAudio();
+            }
+        });
         
         if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
             document.addEventListener('click', startExperience, { once: true });
