@@ -41,6 +41,14 @@ class AudioManager {
     async initializeAudio() {
         if (this.isInitialized) return;
         
+        // Check if Web Audio API is supported
+        if (!Utils.supportsAudio()) {
+            console.warn('Web Audio API not supported, disabling audio');
+            this.isEnabled = false;
+            this.isInitialized = true;
+            return;
+        }
+        
         try {
             // Create Web Audio API context
             this.context = new (window.AudioContext || window.webkitAudioContext)();
@@ -59,29 +67,50 @@ class AudioManager {
             this.effectsGain.connect(this.masterGain);
             this.effectsGain.gain.value = this.effectsVolume;
             
-            // Initialize procedural generators
-            this.initializeProcedurals();
+            // Initialize procedural generators only if context is ready
+            if (this.context.state !== 'suspended') {
+                this.initializeProcedurals();
+            }
             
             this.isInitialized = true;
             console.log('Audio system initialized successfully');
         } catch (error) {
             console.warn('Audio initialization failed:', error);
             this.isEnabled = false;
+            this.isInitialized = true; // Mark as initialized to prevent retry loops
         }
     }
 
     initializeProcedurals() {
-        // Wind generator using pink noise
-        this.generators.wind = this.createWindGenerator();
+        if (!this.context || this.context.state === 'suspended') return;
         
-        // Water generator using filtered noise
-        this.generators.water = this.createWaterGenerator();
+        try {
+            // Wind generator using pink noise
+            this.generators.wind = this.createWindGenerator();
+        } catch (e) {
+            console.warn('Failed to create wind generator:', e);
+        }
         
-        // Bird generator using oscillators
-        this.generators.birds = this.createBirdGenerator();
+        try {
+            // Water generator using filtered noise
+            this.generators.water = this.createWaterGenerator();
+        } catch (e) {
+            console.warn('Failed to create water generator:', e);
+        }
         
-        // Footsteps generator
-        this.generators.footsteps = this.createFootstepsGenerator();
+        try {
+            // Bird generator using oscillators
+            this.generators.birds = this.createBirdGenerator();
+        } catch (e) {
+            console.warn('Failed to create bird generator:', e);
+        }
+        
+        try {
+            // Footsteps generator
+            this.generators.footsteps = this.createFootstepsGenerator();
+        } catch (e) {
+            console.warn('Failed to create footsteps generator:', e);
+        }
     }
 
     createWindGenerator() {

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Psalm 23 - An Immersive Journey</title>
     <meta name="description" content="Experience the timeless comfort of Psalm 23 through an immersive visual journey">
     <meta name="theme-color" content="#2c3e50">
@@ -10,20 +10,11 @@
     <!-- PWA Manifest -->
     <link rel="manifest" href="manifest.json">
     
-    <!-- Preload critical resources -->
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500&display=swap" as="style">
-    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" as="script">
-    
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
     
     <!-- Styles -->
     <link rel="stylesheet" href="styles.css">
-    
-    <!-- Three.js and related libraries -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
 </head>
 <body>
     <!-- Loading Screen -->
@@ -58,14 +49,19 @@
                     <input type="checkbox" id="auto-advance" checked>
                 </label>
                 <label class="setting-item">
-                    <span>Ambient particles</span>
-                    <input type="checkbox" id="particles-toggle" checked>
+                    <span>3D Mode</span>
+                    <input type="checkbox" id="webgl-toggle" checked>
                 </label>
             </div>
         </div>
 
         <!-- 3D Scene Container -->
         <div id="scene-container" class="scene-container"></div>
+
+        <!-- Fallback 2D Container -->
+        <div id="fallback-container" class="fallback-container" style="display: none;">
+            <div class="fallback-scene" id="fallback-scene"></div>
+        </div>
 
         <!-- Content Overlay -->
         <div id="content-overlay" class="content-overlay">
@@ -85,16 +81,213 @@
         <div id="gesture-area" class="gesture-area"></div>
     </div>
 
-    <!-- Audio Elements -->
-    <audio id="ambient-audio" loop>
-        <source src="audio/ambient.mp3" type="audio/mpeg">
-    </audio>
+    <!-- Scripts with better error handling -->
+    <script>
+        // Mobile Safari compatibility check
+        window.safariCompatMode = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+        window.isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        
+        // Error handling
+        window.addEventListener('error', function(e) {
+            console.error('Global error:', e.error);
+            if (window.psalm23App && window.psalm23App.handleError) {
+                window.psalm23App.handleError(e.error);
+            }
+        });
+        
+        // Load scripts conditionally
+        function loadScript(src, callback) {
+            const script = document.createElement('script');
+            script.src = src;
+            script.onload = callback;
+            script.onerror = function() {
+                console.error('Failed to load script:', src);
+                if (callback) callback(new Error('Script load failed'));
+            };
+            document.head.appendChild(script);
+        }
 
-    <!-- Scripts -->
-    <script src="js/utils.js"></script>
-    <script src="js/audio.js"></script>
-    <script src="js/scenes.js"></script>
-    <script src="js/effects.js"></script>
-    <script src="js/app.js"></script>
+        // Load Three.js with fallback
+        function initializeApp() {
+            const scripts = [
+                'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js',
+                'js/utils.js',
+                'js/audio.js',
+                'js/scenes.js',
+                'js/app.js'
+            ];
+            
+            let loadedScripts = 0;
+            const errors = [];
+            
+            function scriptLoaded(error) {
+                if (error) errors.push(error);
+                loadedScripts++;
+                
+                if (loadedScripts === scripts.length) {
+                    if (errors.length > 0) {
+                        console.warn('Some scripts failed to load, using fallback mode');
+                        initializeFallbackMode();
+                    } else {
+                        // All scripts loaded successfully
+                        console.log('All scripts loaded successfully');
+                    }
+                }
+            }
+            
+            scripts.forEach(src => loadScript(src, scriptLoaded));
+        }
+        
+        function initializeFallbackMode() {
+            // Simple 2D fallback for when 3D fails
+            document.getElementById('scene-container').style.display = 'none';
+            document.getElementById('fallback-container').style.display = 'block';
+            
+            // Initialize simple 2D version
+            window.fallbackApp = new FallbackApp();
+        }
+        
+        // Start initialization
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeApp);
+        } else {
+            initializeApp();
+        }
+    </script>
+    
+    <!-- Fallback App for when 3D fails -->
+    <script>
+        class FallbackApp {
+            constructor() {
+                this.currentVerse = 0;
+                this.verses = [
+                    {
+                        title: "The Lord is my shepherd",
+                        text: "The Lord is my shepherd; I shall not want.",
+                        reflection: "In God's care, we find complete provision and peace.",
+                        background: "linear-gradient(135deg, #4a9b8e 0%, #6eb5a6 100%)"
+                    },
+                    {
+                        title: "Green pastures",
+                        text: "He makes me lie down in green pastures.",
+                        reflection: "In His presence, we find rest and renewal.",
+                        background: "linear-gradient(135deg, #27ae60 0%, #2ecc71 100%)"
+                    },
+                    {
+                        title: "Still waters",
+                        text: "He leads me beside quiet waters.",
+                        reflection: "His guidance brings us to places of peace and refreshment.",
+                        background: "linear-gradient(135deg, #2980b9 0%, #3498db 100%)"
+                    },
+                    {
+                        title: "Valley of shadows",
+                        text: "Even though I walk through the valley of the shadow of death, I will fear no evil, for you are with me.",
+                        reflection: "In our darkest moments, His presence is our light.",
+                        background: "linear-gradient(135deg, #34495e 0%, #2c3e50 100%)"
+                    },
+                    {
+                        title: "Prepared table",
+                        text: "You prepare a table before me in the presence of my enemies; you anoint my head with oil; my cup overflows.",
+                        reflection: "God's abundance surrounds us even in difficult times.",
+                        background: "linear-gradient(135deg, #8e44ad 0%, #9b59b6 100%)"
+                    },
+                    {
+                        title: "Eternal dwelling",
+                        text: "Surely goodness and mercy shall follow me all the days of my life, and I will dwell in the house of the Lord forever.",
+                        reflection: "God's love extends into eternity, our permanent home.",
+                        background: "linear-gradient(135deg, #e67e22 0%, #f39c12 100%)"
+                    }
+                ];
+                
+                this.init();
+            }
+            
+            init() {
+                this.setupUI();
+                this.loadVerse(0);
+                this.hideLoadingScreen();
+            }
+            
+            setupUI() {
+                // Navigation
+                document.getElementById('prev-btn').addEventListener('click', () => this.previousVerse());
+                document.getElementById('next-btn').addEventListener('click', () => this.nextVerse());
+                
+                // Touch gestures
+                let startX, startY;
+                const gestureArea = document.getElementById('gesture-area');
+                
+                gestureArea.addEventListener('touchstart', (e) => {
+                    startX = e.touches[0].clientX;
+                    startY = e.touches[0].clientY;
+                });
+                
+                gestureArea.addEventListener('touchend', (e) => {
+                    if (!startX || !startY) return;
+                    
+                    const endX = e.changedTouches[0].clientX;
+                    const endY = e.changedTouches[0].clientY;
+                    const diffX = startX - endX;
+                    const diffY = startY - endY;
+                    
+                    if (Math.abs(diffX) > Math.abs(diffY)) {
+                        if (diffX > 50) this.nextVerse();
+                        else if (diffX < -50) this.previousVerse();
+                    }
+                    
+                    startX = startY = null;
+                });
+                
+                // Tap to advance
+                gestureArea.addEventListener('click', () => this.nextVerse());
+            }
+            
+            nextVerse() {
+                if (this.currentVerse < this.verses.length - 1) {
+                    this.loadVerse(this.currentVerse + 1);
+                }
+            }
+            
+            previousVerse() {
+                if (this.currentVerse > 0) {
+                    this.loadVerse(this.currentVerse - 1);
+                }
+            }
+            
+            loadVerse(index) {
+                this.currentVerse = index;
+                const verse = this.verses[index];
+                
+                // Update content
+                document.getElementById('verse-title').textContent = verse.title;
+                document.getElementById('verse-text').textContent = verse.text;
+                document.getElementById('verse-reflection').textContent = verse.reflection;
+                
+                // Update background
+                const fallbackScene = document.getElementById('fallback-scene');
+                fallbackScene.style.background = verse.background;
+                
+                // Update progress
+                document.getElementById('current-verse').textContent = index + 1;
+                document.getElementById('total-verses').textContent = this.verses.length;
+                
+                const progress = ((index + 1) / this.verses.length) * 100;
+                document.getElementById('progress-bar').style.width = `${progress}%`;
+                
+                // Update navigation buttons
+                document.getElementById('prev-btn').disabled = index === 0;
+                document.getElementById('next-btn').disabled = index === this.verses.length - 1;
+                
+                // Show content
+                const verseContent = document.querySelector('.verse-content');
+                verseContent.classList.remove('visible');
+                setTimeout(() => verseContent.classList.add('visible'), 300);
+            }
+            
+            hideLoadingScreen() {
+                document.getElementById('loading-screen').classList.add('hidden');
+            }
+        }
+    </script>
 </body>
 </html>

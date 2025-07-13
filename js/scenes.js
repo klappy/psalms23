@@ -39,38 +39,55 @@ class SceneManager {
         this.container = document.getElementById('scene-container');
         if (!this.container) {
             console.error('Scene container not found');
-            return;
+            throw new Error('Scene container not found');
         }
 
-        // Create renderer
-        this.renderer = new THREE.WebGLRenderer({
-            antialias: this.qualityLevel === 'high',
-            alpha: true,
-            powerPreference: 'high-performance'
-        });
-        
-        this.renderer.setSize(window.innerWidth, window.innerHeight);
-        this.renderer.setPixelRatio(this.pixelRatio);
-        this.renderer.shadowMap.enabled = true;
-        this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-        this.renderer.outputEncoding = THREE.sRGBEncoding;
-        this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-        this.renderer.toneMappingExposure = 1.2;
-        
-        this.container.appendChild(this.renderer.domElement);
+        try {
+            // Create renderer with mobile-friendly settings
+            const rendererOptions = {
+                antialias: this.qualityLevel === 'high' && !Utils.isMobile(),
+                alpha: true,
+                powerPreference: Utils.isMobile() ? 'default' : 'high-performance',
+                preserveDrawingBuffer: false,
+                failIfMajorPerformanceCaveat: false
+            };
 
-        // Create camera
-        this.camera = new THREE.PerspectiveCamera(
-            75,
-            window.innerWidth / window.innerHeight,
-            0.1,
-            1000
-        );
+            this.renderer = new THREE.WebGLRenderer(rendererOptions);
+            
+            this.renderer.setSize(window.innerWidth, window.innerHeight);
+            this.renderer.setPixelRatio(Math.min(this.pixelRatio, Utils.isMobile() ? 1.5 : 2));
+            
+            // Simplified settings for mobile
+            if (Utils.isMobile()) {
+                this.renderer.shadowMap.enabled = false;
+            } else {
+                this.renderer.shadowMap.enabled = true;
+                this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            }
+            
+            this.renderer.outputEncoding = THREE.sRGBEncoding;
+            this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
+            this.renderer.toneMappingExposure = 1.2;
+            
+            this.container.appendChild(this.renderer.domElement);
 
-        // Handle resize
-        window.addEventListener('resize', () => this.handleResize());
-        
-        this.isInitialized = true;
+            // Create camera
+            this.camera = new THREE.PerspectiveCamera(
+                75,
+                window.innerWidth / window.innerHeight,
+                0.1,
+                1000
+            );
+
+            // Handle resize
+            window.addEventListener('resize', () => this.handleResize());
+            
+            this.isInitialized = true;
+            
+        } catch (error) {
+            console.error('Failed to initialize WebGL renderer:', error);
+            throw error;
+        }
     }
 
     createScenes() {

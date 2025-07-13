@@ -42,6 +42,11 @@ class Psalm23App {
             // Load settings from storage
             this.loadSettings();
             
+            // Check WebGL support
+            if (!this.checkWebGLSupport()) {
+                throw new Error('WebGL not supported');
+            }
+            
             // Initialize core systems
             await this.initializeSystems();
             
@@ -65,8 +70,32 @@ class Psalm23App {
             
         } catch (error) {
             console.error('Failed to initialize Psalm 23 Experience:', error);
-            this.showErrorMessage('Failed to initialize the experience. Please refresh the page.');
+            this.handleError(error);
         }
+    }
+
+    checkWebGLSupport() {
+        try {
+            const canvas = document.createElement('canvas');
+            const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+            return !!gl;
+        } catch (e) {
+            return false;
+        }
+    }
+
+    handleError(error) {
+        console.error('App error:', error);
+        
+        // Hide loading screen
+        this.hideLoadingScreen();
+        
+        // Switch to fallback mode
+        document.getElementById('scene-container').style.display = 'none';
+        document.getElementById('fallback-container').style.display = 'block';
+        
+        // Initialize fallback app
+        window.fallbackApp = new FallbackApp();
     }
 
     async initializeSystems() {
@@ -552,55 +581,63 @@ class Psalm23App {
     }
 }
 
-// Initialize the application when DOM is ready
-document.addEventListener('DOMContentLoaded', () => {
-    // Wait for user interaction on mobile to start audio
-    const startApp = () => {
-        window.psalm23App = new Psalm23App();
-        document.removeEventListener('click', startApp);
-        document.removeEventListener('touchstart', startApp);
-    };
-    
-    // For mobile devices, wait for user interaction
-    if (Utils.isMobile()) {
-        document.addEventListener('click', startApp);
-        document.addEventListener('touchstart', startApp);
-        
-        // Show instruction for mobile users
-        const instruction = document.createElement('div');
-        instruction.style.cssText = `
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-            z-index: 10001;
-            font-family: 'Inter', sans-serif;
-        `;
-        instruction.innerHTML = `
-            <h3>Welcome to Psalm 23</h3>
-            <p>Tap anywhere to begin your immersive journey</p>
-        `;
-        document.body.appendChild(instruction);
-        
-        // Remove instruction after user interaction
-        const removeInstruction = () => {
-            if (instruction.parentNode) {
-                instruction.parentNode.removeChild(instruction);
+// Only initialize if not already handled by fallback mode
+if (typeof window.fallbackApp === 'undefined' && typeof THREE !== 'undefined') {
+    // Initialize the application when DOM is ready
+    document.addEventListener('DOMContentLoaded', () => {
+        // Wait for user interaction on mobile to start audio
+        const startApp = () => {
+            try {
+                window.psalm23App = new Psalm23App();
+                document.removeEventListener('click', startApp);
+                document.removeEventListener('touchstart', startApp);
+            } catch (error) {
+                console.error('Failed to start main app, falling back to 2D mode:', error);
+                window.fallbackApp = new FallbackApp();
             }
         };
         
-        document.addEventListener('click', removeInstruction);
-        document.addEventListener('touchstart', removeInstruction);
-    } else {
-        // For desktop, start immediately
-        startApp();
-    }
-});
+        // For mobile devices, wait for user interaction
+        if (Utils && Utils.isMobile()) {
+            document.addEventListener('click', startApp);
+            document.addEventListener('touchstart', startApp);
+            
+            // Show instruction for mobile users
+            const instruction = document.createElement('div');
+            instruction.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: rgba(0, 0, 0, 0.8);
+                color: white;
+                padding: 20px;
+                border-radius: 10px;
+                text-align: center;
+                z-index: 10001;
+                font-family: 'Inter', sans-serif;
+            `;
+            instruction.innerHTML = `
+                <h3>Welcome to Psalm 23</h3>
+                <p>Tap anywhere to begin your immersive journey</p>
+            `;
+            document.body.appendChild(instruction);
+            
+            // Remove instruction after user interaction
+            const removeInstruction = () => {
+                if (instruction.parentNode) {
+                    instruction.parentNode.removeChild(instruction);
+                }
+            };
+            
+            document.addEventListener('click', removeInstruction);
+            document.addEventListener('touchstart', removeInstruction);
+        } else {
+            // For desktop, start immediately
+            startApp();
+        }
+    });
+}
 
 // Handle page unload
 window.addEventListener('beforeunload', () => {
