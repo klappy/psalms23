@@ -7,9 +7,11 @@
     <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+    <!-- Loading overlay -->
+    <div id="loading" role="status" aria-live="polite">Loading…</div>
     <!-- Three.js canvas will be injected by the renderer -->
-    <div id="verse-container">
-        <div id="verse"></div>
+    <div id="verse-container" role="main" tabindex="0">
+        <div id="verse" aria-live="polite"></div>
     </div>
 
     <!-- Load Three.js from CDN -->

@@ -13,6 +13,40 @@ canvas {
   display: block; /* removes scrollbars */
 }
 
+/* Loading overlay */
+#loading {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #000;
+  color: #fff;
+  font-size: 1.5rem;
+  letter-spacing: 0.05em;
+  transition: opacity 0.5s ease;
+  z-index: 10;
+}
+
+#loading.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Focus styles for keyboard navigation */
+#verse-container:focus-within #verse {
+  outline: 2px dashed #fff;
+  outline-offset: 4px;
+}
+
+/* Fallback styling when WebGL isn’t available */
+body.no-webgl {
+  background: url('https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=1200&q=80') center/cover no-repeat fixed;
+}
+
 /* Verse overlay */
 #verse-container {
   position: fixed;

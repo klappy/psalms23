@@ -1,5 +1,18 @@
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.157.0/build/three.module.js';
 
+// Helper to test WebGL availability
+function isWebGLSupported() {
+  try {
+    const canvas = document.createElement('canvas');
+    return !!(
+      window.WebGLRenderingContext &&
+      (canvas.getContext('webgl') || canvas.getContext('experimental-webgl'))
+    );
+  } catch (_) {
+    return false;
+  }
+}
+
 // ----- Configuration -----
 // Psalm 23 verses (KJV)
 const VERSES = [
@@ -22,103 +35,178 @@ const IMAGE_URLS = [
 ];
 
 const verseContainer = document.getElementById('verse');
+const loadingEl = document.getElementById('loading');
 
-// ----- Three.js Setup -----
-const scene = new THREE.Scene();
-scene.fog = new THREE.FogExp2(0x000000, 0.015);
-
-const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-camera.position.z = 5;
-
-const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-renderer.setSize(window.innerWidth, window.innerHeight);
-document.body.appendChild(renderer.domElement);
-
-// Resize handling
-window.addEventListener('resize', () => {
-  camera.aspect = window.innerWidth / window.innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth, window.innerHeight);
-});
-
-// Create scrolling planes (sprites)
-const loader = new THREE.TextureLoader();
-
-const planes = [];
-const BOUNDS = 20; // world bounds for bouncing
-
-IMAGE_URLS.forEach((url, i) => {
-  loader.load(url, (tex) => {
-    const geometry = new THREE.PlaneGeometry(5, 3); // 5x3 keeps ~16:9 aspect
-    const material = new THREE.MeshBasicMaterial({ map: tex, transparent: true });
-    const mesh = new THREE.Mesh(geometry, material);
-
-    // Random initial position within bounds
-    mesh.position.set(
-      THREE.MathUtils.randFloatSpread(BOUNDS),
-      THREE.MathUtils.randFloatSpread(BOUNDS * 0.6),
-      THREE.MathUtils.randFloat(-50, -10)
-    );
-
-    // Give each plane a small random velocity vector (like Roku screensaver icons)
-    mesh.userData.velocity = new THREE.Vector3(
-      THREE.MathUtils.randFloat(0.02, 0.04) * (Math.random() < 0.5 ? 1 : -1),
-      THREE.MathUtils.randFloat(0.02, 0.04) * (Math.random() < 0.5 ? 1 : -1),
-      0
-    );
-
-    planes.push(mesh);
-    scene.add(mesh);
-  });
-});
-
-// ----- Verse sequencing -----
-let currentVerse = -1;
+// ----- Accessibility & Verse Navigation Helpers -----
+let currentVerse = 0;
 const VERSE_DISPLAY_DURATION = 8000; // ms
+let verseTimer;
 
-function showNextVerse() {
-  currentVerse = (currentVerse + 1) % VERSES.length;
+function displayVerse(index) {
+  currentVerse = (index + VERSES.length) % VERSES.length;
   verseContainer.classList.remove('show');
-  // Wait for fade-out before changing text
-  setTimeout(() => {
-    verseContainer.innerHTML = VERSES[currentVerse];
-    verseContainer.classList.add('show');
-  }, 1000); // matches CSS transition
 
-  // Schedule next verse
-  setTimeout(showNextVerse, VERSE_DISPLAY_DURATION);
+  // Wait briefly for fade-out before swapping text
+  setTimeout(() => {
+    verseContainer.textContent = VERSES[currentVerse];
+    verseContainer.classList.add('show');
+  }, 100);
+
+  resetVerseTimer();
 }
 
-// Start verse cycling after initial load
-setTimeout(showNextVerse, 1000);
+function nextVerse() {
+  displayVerse(currentVerse + 1);
+}
 
-// ----- Animation loop -----
-const clock = new THREE.Clock();
+function prevVerse() {
+  displayVerse(currentVerse - 1);
+}
 
-function animate() {
-  requestAnimationFrame(animate);
+function resetVerseTimer() {
+  clearTimeout(verseTimer);
+  verseTimer = setTimeout(() => nextVerse(), VERSE_DISPLAY_DURATION);
+}
 
-  const delta = clock.getDelta();
+// Touch / swipe support
+let touchStartX = 0;
+let touchStartY = 0;
+window.addEventListener('touchstart', (e) => {
+  const t = e.changedTouches[0];
+  touchStartX = t.clientX;
+  touchStartY = t.clientY;
+});
 
-  // Update plane positions
-  planes.forEach((plane) => {
-    const v = plane.userData.velocity;
-    plane.position.addScaledVector(v, delta * 60); // scale by 60fps reference
+window.addEventListener('touchend', (e) => {
+  const t = e.changedTouches[0];
+  const dx = t.clientX - touchStartX;
+  const dy = t.clientY - touchStartY;
+  if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 30) {
+    dx < 0 ? nextVerse() : prevVerse();
+  }
+});
 
-    // Bounce off bounds
-    if (plane.position.x > BOUNDS || plane.position.x < -BOUNDS) v.x = -v.x;
-    if (plane.position.y > BOUNDS * 0.6 || plane.position.y < -BOUNDS * 0.6) v.y = -v.y;
+// Keyboard navigation
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight') nextVerse();
+  if (e.key === 'ArrowLeft') prevVerse();
+});
 
-    // Always face the camera
-    plane.lookAt(camera.position);
+if (!isWebGLSupported()) {
+  // ----- Fallback (no WebGL) -----
+  document.body.classList.add('no-webgl');
+  loadingEl.classList.add('hidden');
+
+  displayVerse(0); // show first verse immediately
+} else {
+  // ----- Three.js Setup -----
+  const scene = new THREE.Scene();
+  scene.fog = new THREE.FogExp2(0x000000, 0.015);
+
+  const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+  camera.position.z = 5;
+
+  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  document.body.appendChild(renderer.domElement);
+
+  // Resize handling
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
   });
 
-  // Slow camera dolly for depth
-  camera.position.z -= delta * 0.5;
-  if (camera.position.z < 1) camera.position.z = 5;
+  // Create scrolling planes (sprites)
+  const loader = new THREE.TextureLoader();
 
-  renderer.render(scene, camera);
+  const planes = [];
+  const BOUNDS = 20; // world bounds for bouncing
+
+  const totalImages = IMAGE_URLS.length;
+  let loadedImages = 0;
+
+  const markLoaded = () => {
+    loadedImages += 1;
+    if (loadedImages >= totalImages) {
+      loadingEl.classList.add('hidden');
+      // Start verse cycle when visuals ready
+      displayVerse(0);
+    }
+  };
+
+  IMAGE_URLS.forEach((url) => {
+    loader.load(
+      url,
+      (tex) => {
+        const geometry = new THREE.PlaneGeometry(5, 3); // 5x3 keeps ~16:9 aspect
+        const material = new THREE.MeshBasicMaterial({ map: tex, transparent: true });
+        const mesh = new THREE.Mesh(geometry, material);
+
+        mesh.position.set(
+          THREE.MathUtils.randFloatSpread(BOUNDS),
+          THREE.MathUtils.randFloatSpread(BOUNDS * 0.6),
+          THREE.MathUtils.randFloat(-50, -10)
+        );
+
+        mesh.userData.velocity = new THREE.Vector3(
+          THREE.MathUtils.randFloat(0.02, 0.04) * (Math.random() < 0.5 ? 1 : -1),
+          THREE.MathUtils.randFloat(0.02, 0.04) * (Math.random() < 0.5 ? 1 : -1),
+          0
+        );
+
+        planes.push(mesh);
+        scene.add(mesh);
+        markLoaded();
+      },
+      undefined,
+      () => {
+        // Error handler: use placeholder plane
+        const geometry = new THREE.PlaneGeometry(5, 3);
+        const material = new THREE.MeshBasicMaterial({ color: 0x444444, opacity: 0.6, transparent: true });
+        const mesh = new THREE.Mesh(geometry, material);
+        mesh.position.set(
+          THREE.MathUtils.randFloatSpread(BOUNDS),
+          THREE.MathUtils.randFloatSpread(BOUNDS * 0.6),
+          THREE.MathUtils.randFloat(-50, -10)
+        );
+        mesh.userData.velocity = new THREE.Vector3(
+          THREE.MathUtils.randFloat(0.02, 0.04) * (Math.random() < 0.5 ? 1 : -1),
+          THREE.MathUtils.randFloat(0.02, 0.04) * (Math.random() < 0.5 ? 1 : -1),
+          0
+        );
+        planes.push(mesh);
+        scene.add(mesh);
+        markLoaded();
+      }
+    );
+  });
+
+  // ----- Animation loop -----
+  const clock = new THREE.Clock();
+
+  function animate() {
+    requestAnimationFrame(animate);
+
+    const delta = clock.getDelta();
+
+    // Update plane positions
+    planes.forEach((plane) => {
+      const v = plane.userData.velocity;
+      plane.position.addScaledVector(v, delta * 60);
+
+      if (plane.position.x > BOUNDS || plane.position.x < -BOUNDS) v.x = -v.x;
+      if (plane.position.y > BOUNDS * 0.6 || plane.position.y < -BOUNDS * 0.6) v.y = -v.y;
+
+      plane.lookAt(camera.position);
+    });
+
+    camera.position.z -= delta * 0.5;
+    if (camera.position.z < 1) camera.position.z = 5;
+
+    renderer.render(scene, camera);
+  }
+
+  animate();
 }
-
-animate();
