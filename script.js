@@ -17,6 +17,7 @@ console.log('ScrollTrigger present:', typeof ScrollTrigger !== 'undefined');
 console.log('THREE present:', typeof THREE !== 'undefined');
 
 if(ANIM_ENABLED){
+  console.log('GSAP + ScrollTrigger detected – animations enabled');
   // Original GSAP animation setup wrapped
 
   // Loop through each "panel" section and create animations
@@ -40,18 +41,16 @@ if(ANIM_ENABLED){
       }
     );
 
-    // Verse fade & rise
-    gsap.fromTo(verse,
-      {autoAlpha:0, y:50},
+    // Verse fade & rise (visible by default, animate only when ScrollTrigger fires)
+    gsap.from(verse,
       {
-        autoAlpha:1,
-        y:0,
+        autoAlpha:0,
+        y:50,
         ease:'power1.out',
         scrollTrigger:{
           trigger:panel,
-          start:'top center',
-          end:'center center',
-          scrub:true
+          start:'top 80%', // start fade when panel entering viewport
+          toggleActions:'play none none reverse'
         }
       }
     );
@@ -163,6 +162,7 @@ if(ANIM_ENABLED){
 
 // If ANIM_ENABLED false, basic interaction: allow verse text tap to focus
 if(!ANIM_ENABLED){
+  console.log('Animations disabled – running static fallback');
   document.querySelectorAll('.verse').forEach(v=>{
     v.addEventListener('pointerdown',()=>{
       v.classList.toggle('highlight');
