@@ -167,6 +167,8 @@ if(!ANIM_ENABLED){
     v.addEventListener('pointerdown',()=>{
       v.classList.toggle('highlight');
     });
+    v.style.opacity = 1;
+    v.style.visibility = 'visible';
   });
 }
 
@@ -196,9 +198,17 @@ function hideLoader(){
   if(l) l.classList.add('hidden');
 }
 
+function showAllVerses(){
+  document.querySelectorAll('.verse').forEach(v=>{
+    v.style.opacity = 1;
+    v.style.visibility = 'visible';
+  });
+}
+
 // Log JS errors and ensure loader disappears
 window.addEventListener('error', (e)=>{
   console.error('Global JS error:', e.message, e.filename, e.lineno);
+  showAllVerses();
   hideLoader();
 });
 
@@ -229,6 +239,7 @@ setTimeout(()=>{
   if(typeof THREE==='undefined') missing.push('Three.js');
   if(missing.length){
     console.warn('Some libraries failed to load:', missing.join(', '));
+    showAllVerses();
     hideLoader();
   }
 }, 3000);
