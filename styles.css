@@ -12,7 +12,7 @@ html,body{height:100%;width:100%;overflow-x:hidden;font-family:'Montserrat',sans
 .panel.dark .bg{filter:brightness(0.4);}
 
 /* Verse text styling */
-.verse{position:relative;z-index:1;font-family:'Playfair Display',serif;font-size:clamp(1.5rem,4vw,3rem);line-height:1.4;text-align:center;text-shadow:0 2px 8px rgba(0,0,0,0.8);padding:0 1rem;}
+.verse{position:relative;z-index:1;opacity:1;font-family:'Playfair Display',serif;font-size:clamp(1.5rem,4vw,3rem);line-height:1.4;text-align:center;text-shadow:0 2px 8px rgba(0,0,0,0.8);padding:0 1rem;}
 
 /* Small landscape devices */
 @media (orientation:landscape) and (max-height:500px){
