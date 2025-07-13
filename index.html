@@ -6,6 +6,13 @@
   <title>Psalm 23 | Immersive Journey</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Montserrat:wght@300;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css"/>
+  <!-- Social meta & favicon -->
+  <meta property="og:title" content="Psalm 23 | Immersive Journey"/>
+  <meta property="og:description" content="Scroll, listen, and experience Psalm 23 like never before."/>
+  <meta property="og:image" content="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80"/>
+  <meta property="og:type" content="website"/>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <link rel="icon" href="https://fav.farm/⛪"/>
 </head>
 <body>
   <!-- Loading overlay -->
@@ -13,42 +20,42 @@
      <div class="progress">Loading…</div>
   </div>
   <div id="scrollContainer">
-    <section class="panel" id="verse1">
+    <section class="panel" id="verse1" role="region" aria-label="Psalm 23, verse 1">
       <div class="bg" style="background-image:url('https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1050&q=80');"></div>
-      <p class="verse">The Lord is my shepherd;<br/>I shall not want.</p>
+      <p class="verse" role="heading" aria-level="2" tabindex="0">The Lord is my shepherd;<br/>I shall not want.</p>
     </section>
 
-    <section class="panel" id="verse2">
+    <section class="panel" id="verse2" role="region" aria-label="Psalm 23, verse 2">
       <div class="bg water" style="background-image:url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1050&q=80');"></div>
       <!-- 3D canvas for flowing water particles -->
       <canvas id="threeVerse2" class="three-canvas"></canvas>
-      <p class="verse">He makes me lie down in green pastures.<br/>He leads me beside still waters.</p>
-      <audio class="ambient-audio" src="audio/stream.mp3" loop preload="auto" muted></audio>
+      <p class="verse" role="heading" aria-level="2" tabindex="0">He makes me lie down in green pastures.<br/>He leads me beside still waters.</p>
+      <audio class="ambient-audio" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_d726abb934.mp3?filename=calm-river-ambient-116132.mp3" loop preload="auto" muted aria-hidden="true"></audio>
     </section>
 
-    <section class="panel" id="verse3">
+    <section class="panel" id="verse3" role="region" aria-label="Psalm 23, verse 3">
       <div class="bg" style="background-image:url('https://images.unsplash.com/photo-1518837695005-2083093ee35b?auto=format&fit=crop&w=1050&q=80');"></div>
-      <p class="verse">He restores my soul.<br/>He leads me in paths of righteousness<br/>for His name’s sake.</p>
+      <p class="verse" role="heading" aria-level="2" tabindex="0">He restores my soul.<br/>He leads me in paths of righteousness<br/>for His name’s sake.</p>
     </section>
 
-    <section class="panel dark" id="verse4">
+    <section class="panel dark" id="verse4" role="region" aria-label="Psalm 23, verse 4">
       <div class="bg" style="background-image:url('https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1050&q=80');"></div>
       <div class="fog"></div>
-      <p class="verse">Even though I walk through the valley<br/>of the shadow of death,<br/>I will fear no evil,<br/>for You are with me;<br/>Your rod and Your staff,<br/>they comfort me.</p>
-      <audio class="ambient-audio" src="audio/valley_wind.mp3" loop preload="auto" muted></audio>
+      <p class="verse" role="heading" aria-level="2" tabindex="0">Even though I walk through the valley<br/>of the shadow of death,<br/>I will fear no evil,<br/>for You are with me;<br/>Your rod and Your staff,<br/>they comfort me.</p>
+      <audio class="ambient-audio" src="https://cdn.pixabay.com/download/audio/2021/08/08/audio_f10b63b414.mp3?filename=low-wind-rumble-7319.mp3" loop preload="auto" muted aria-hidden="true"></audio>
     </section>
 
-    <section class="panel" id="verse5">
+    <section class="panel" id="verse5" role="region" aria-label="Psalm 23, verse 5">
       <div class="bg" style="background-image:url('https://images.unsplash.com/photo-1505798577917-a65157d3320f?auto=format&fit=crop&w=1050&q=80');"></div>
-      <p class="verse">You prepare a table before me<br/>in the presence of my enemies;<br/>You anoint my head with oil;<br/>my cup overflows.</p>
+      <p class="verse" role="heading" aria-level="2" tabindex="0">You prepare a table before me<br/>in the presence of my enemies;<br/>You anoint my head with oil;<br/>my cup overflows.</p>
     </section>
 
-    <section class="panel" id="verse6">
+    <section class="panel" id="verse6" role="region" aria-label="Psalm 23, verse 6">
       <div class="bg" style="background-image:url('https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1050&q=80');"></div>
       <!-- 3D canvas for star field -->
       <canvas id="threeVerse6" class="three-canvas"></canvas>
-      <p class="verse">Surely goodness and mercy shall follow me<br/>all the days of my life,<br/>and I shall dwell in the house of the Lord<br/>forever.</p>
-      <audio class="ambient-audio" src="audio/choir.mp3" loop preload="auto" muted></audio>
+      <p class="verse" role="heading" aria-level="2" tabindex="0">Surely goodness and mercy shall follow me<br/>all the days of my life,<br/>and I shall dwell in the house of the Lord<br/>forever.</p>
+      <audio class="ambient-audio" src="https://cdn.pixabay.com/download/audio/2022/03/26/audio_1a4f38ebb9.mp3?filename=soft-choir-ambient-116725.mp3" loop preload="auto" muted aria-hidden="true"></audio>
     </section>
   </div>
 

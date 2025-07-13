@@ -1,4 +1,8 @@
 gsap.registerPlugin(ScrollTrigger);
+// ----------------- Feature detection -----------------
+const WEBGL_AVAILABLE = (()=>{
+  try{ const c=document.createElement('canvas'); return !!window.WebGLRenderingContext && (c.getContext('webgl')||c.getContext('experimental-webgl')); }catch(e){ return false; }})();
+if(!WEBGL_AVAILABLE){ document.documentElement.classList.add('no-webgl'); }
 
 // Loop through each "panel" section and create animations
 Array.from(document.querySelectorAll('.panel')).forEach(panel => {
@@ -120,6 +124,7 @@ window.addEventListener('resize', onResize);
 
 // ----------------- Verse 2 – Water Particles -----------------
 function initWaterParticles(){
+  if(!WEBGL_AVAILABLE) return;
   const canvas = document.getElementById('threeVerse2');
   if(!canvas || !canvas.getContext) return;
 
@@ -151,6 +156,7 @@ function initWaterParticles(){
 
 // ----------------- Verse 6 – Star Field -----------------
 function initStarField(){
+  if(!WEBGL_AVAILABLE) return;
   const canvas = document.getElementById('threeVerse6');
   if(!canvas || !canvas.getContext) return;
 
@@ -208,4 +214,32 @@ if(window.DeviceOrientationEvent){
       v.style.transform = `rotateX(${-yNorm*3}deg) rotateY(${xNorm*3}deg)`;
     });
   });
+}
+
+// ----------------- Keyboard Navigation -----------------
+const panels = Array.from(document.querySelectorAll('.panel'));
+function scrollToPanel(index){
+  if(index>=0 && index<panels.length){ panels[index].scrollIntoView({behavior:'smooth'}); }
+}
+window.addEventListener('keydown',(e)=>{
+  switch(e.key){
+    case 'ArrowDown':
+    case 'PageDown':
+    case ' ': // space
+      e.preventDefault();
+      scrollToPanel(findCurrentIndex()+1);
+      break;
+    case 'ArrowUp':
+    case 'PageUp':
+      e.preventDefault();
+      scrollToPanel(findCurrentIndex()-1);
+      break;
+  }
+});
+
+function findCurrentIndex(){
+  const threshold=window.innerHeight*0.4;
+  return panels.findIndex(p=>{
+    const rect=p.getBoundingClientRect();
+    return rect.top<=threshold && rect.bottom>=threshold;});
 }
