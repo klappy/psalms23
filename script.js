@@ -278,13 +278,16 @@ function onResize(){
 window.addEventListener('resize', onResize);
 
 // ----------------- Device Tilt Parallax -----------------
-if(window.DeviceOrientationEvent && typeof THREE!=='undefined'){
+// Simple clamp helper (avoids relying on THREE for math)
+const clamp = (val,min,max)=>Math.max(min,Math.min(max,val));
+
+if(window.DeviceOrientationEvent){
   window.addEventListener('deviceorientation', (e)=>{
-    const beta = e.beta || 0; // x tilt
-    const gamma = e.gamma || 0; // y tilt
-    const maxTilt = 15; // degrees
-    const xNorm = THREE.MathUtils.clamp(gamma/maxTilt,-1,1);
-    const yNorm = THREE.MathUtils.clamp(beta/maxTilt,-1,1);
+    const beta = e.beta || 0;   // front-back
+    const gamma = e.gamma || 0; // left-right
+    const maxTilt = 15;         // degrees considered “full tilt”
+    const xNorm = clamp(gamma/maxTilt,-1,1);
+    const yNorm = clamp(beta /maxTilt,-1,1);
 
     document.querySelectorAll('.verse').forEach(v=>{
       v.style.transform = `rotateX(${-yNorm*3}deg) rotateY(${xNorm*3}deg)`;
