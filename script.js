@@ -9,6 +9,11 @@ if(!ANIM_ENABLED){
   console.warn('GSAP/ScrollTrigger not available – running in static fallback mode.');
 }
 
+console.log('--- Library status on script.js init ---');
+console.log('gsap present:', typeof gsap !== 'undefined');
+console.log('ScrollTrigger present:', typeof ScrollTrigger !== 'undefined');
+console.log('THREE present:', typeof THREE !== 'undefined');
+
 if(ANIM_ENABLED){
   // Original GSAP animation setup wrapped
 
