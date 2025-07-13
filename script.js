@@ -47,9 +47,10 @@ if(ANIM_ENABLED){
         autoAlpha:0,
         y:50,
         ease:'power1.out',
+        immediateRender:false, // keep verse visible until animation actually starts
         scrollTrigger:{
           trigger:panel,
-          start:'top 80%', // start fade when panel entering viewport
+          start:'top 80%',
           toggleActions:'play none none reverse'
         }
       }
