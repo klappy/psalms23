@@ -9,7 +9,7 @@ class PsalmScreensaver {
         this.scrollBar = document.querySelector('.scroll-bar');
         
         this.isAutoScrolling = false;
-        this.autoScrollSpeed = 1.2;
+        this.autoScrollSpeed = 2.0;
         this.lastScrollTime = 0;
         this.animationFrame = null;
         this.touchStartY = 0;
@@ -17,6 +17,7 @@ class PsalmScreensaver {
         this.velocityY = 0;
         this.isUserInteracting = false;
         this.interactionTimeout = null;
+        this.hasStartedScrolling = false;
         
         this.init();
     }
@@ -30,21 +31,22 @@ class PsalmScreensaver {
         
         // Start auto-scroll after a brief delay to ensure everything is loaded
         setTimeout(() => {
+            this.debugScrollSetup();
             this.startAutoScroll();
-            console.log('Auto-scroll started');
-            console.log('Content height:', this.scrollContainer.scrollHeight);
-            console.log('Container height:', this.scrollContainer.clientHeight);
         }, 1000);
     }
     
     setupEventListeners() {
-        // Touch events for mobile Safari
-        this.scrollContainer.addEventListener('touchstart', this.handleTouchStart.bind(this), { passive: false });
-        this.scrollContainer.addEventListener('touchmove', this.handleTouchMove.bind(this), { passive: false });
-        this.scrollContainer.addEventListener('touchend', this.handleTouchEnd.bind(this), { passive: false });
-        
         // Scroll events
         this.scrollContainer.addEventListener('scroll', this.handleScroll.bind(this), { passive: true });
+        
+        // Touch events for mobile Safari - simplified approach
+        this.scrollContainer.addEventListener('touchstart', this.handleTouchStart.bind(this), { passive: true });
+        this.scrollContainer.addEventListener('touchend', this.handleTouchEnd.bind(this), { passive: true });
+        
+        // Mouse events for desktop testing
+        this.scrollContainer.addEventListener('mousedown', this.handleTouchStart.bind(this));
+        this.scrollContainer.addEventListener('mouseup', this.handleTouchEnd.bind(this));
         
         // Visibility change to restart screensaver
         document.addEventListener('visibilitychange', this.handleVisibilityChange.bind(this));
@@ -54,6 +56,19 @@ class PsalmScreensaver {
         
         // Resize
         window.addEventListener('resize', this.debounce(this.handleResize.bind(this), 250));
+        
+        // Debug buttons
+        document.getElementById('scroll-test-btn').addEventListener('click', () => {
+            console.log('Manual scroll test - scrolling to 300px');
+            this.scrollContainer.scrollTop = 300;
+            this.updateBackgroundLayers();
+            this.updateScrollProgress();
+        });
+        
+        document.getElementById('reset-btn').addEventListener('click', () => {
+            console.log('Reset button clicked');
+            this.restartExperience();
+        });
     }
     
     setupIntersectionObserver() {
@@ -104,12 +119,9 @@ class PsalmScreensaver {
     }
     
     handleTouchStart(e) {
+        console.log('Touch started - stopping auto-scroll');
         this.isUserInteracting = true;
         this.stopAutoScroll();
-        
-        this.touchStartY = e.touches[0].clientY;
-        this.lastTouchY = this.touchStartY;
-        this.velocityY = 0;
         
         // Hide touch indicator
         this.touchIndicator.style.opacity = '0';
@@ -120,46 +132,18 @@ class PsalmScreensaver {
         }
     }
     
-    handleTouchMove(e) {
-        e.preventDefault();
-        
-        const currentY = e.touches[0].clientY;
-        const deltaY = this.lastTouchY - currentY;
-        
-        this.velocityY = deltaY * 0.1;
-        this.lastTouchY = currentY;
-        
-        // Scroll the container
-        this.scrollContainer.scrollTop += deltaY;
-        
-        // Update background layers based on scroll
-        this.updateBackgroundLayers();
-    }
-    
     handleTouchEnd(e) {
-        // Apply momentum scrolling
-        if (Math.abs(this.velocityY) > 0.1) {
-            this.applyMomentum();
-        }
+        console.log('Touch ended - will resume auto-scroll in 2 seconds');
         
         // Resume auto-scroll after interaction timeout
         this.interactionTimeout = setTimeout(() => {
+            console.log('Resuming auto-scroll after user interaction');
             this.isUserInteracting = false;
             this.startAutoScroll();
         }, 2000);
     }
     
-    applyMomentum() {
-        const momentum = () => {
-            if (Math.abs(this.velocityY) > 0.1) {
-                this.scrollContainer.scrollTop += this.velocityY;
-                this.velocityY *= 0.95; // Friction
-                this.updateBackgroundLayers();
-                requestAnimationFrame(momentum);
-            }
-        };
-        requestAnimationFrame(momentum);
-    }
+
     
     handleScroll() {
         this.updateBackgroundLayers();
@@ -207,23 +191,45 @@ class PsalmScreensaver {
         });
     }
     
+    debugScrollSetup() {
+        console.log('=== SCROLL DEBUG INFO ===');
+        console.log('Container height:', this.scrollContainer.clientHeight);
+        console.log('Content height:', this.scrollContainer.scrollHeight);
+        console.log('Scrollable height:', this.scrollContainer.scrollHeight - this.scrollContainer.clientHeight);
+        console.log('Overflow Y:', getComputedStyle(this.scrollContainer).overflowY);
+        console.log('Verses found:', this.verses.length);
+        
+        // Test scroll manually
+        setTimeout(() => {
+            console.log('Testing manual scroll...');
+            this.scrollContainer.scrollTop = 100;
+            console.log('Scroll position after test:', this.scrollContainer.scrollTop);
+        }, 500);
+    }
+    
     startAutoScroll() {
         if (this.isAutoScrolling || this.isUserInteracting) return;
         
+        console.log('Starting auto-scroll...');
         this.isAutoScrolling = true;
-        this.lastScrollTime = performance.now();
+        this.hasStartedScrolling = true;
         
-        const autoScroll = (currentTime) => {
+        const autoScroll = () => {
             if (!this.isAutoScrolling || this.isUserInteracting) return;
             
-            const deltaTime = currentTime - this.lastScrollTime;
-            const scrollAmount = this.autoScrollSpeed * (deltaTime / 16.67); // 60fps normalization
+            const currentScroll = this.scrollContainer.scrollTop;
+            const maxScroll = this.scrollContainer.scrollHeight - this.scrollContainer.clientHeight;
             
-            this.scrollContainer.scrollTop += scrollAmount;
+            if (currentScroll >= maxScroll) {
+                console.log('Reached end, restarting...');
+                setTimeout(() => this.restartExperience(), 2000);
+                return;
+            }
+            
+            this.scrollContainer.scrollTop += this.autoScrollSpeed;
             this.updateBackgroundLayers();
             this.updateScrollProgress();
             
-            this.lastScrollTime = currentTime;
             this.animationFrame = requestAnimationFrame(autoScroll);
         };
         
@@ -301,10 +307,14 @@ class PsalmScreensaver {
         // Optimize scroll container
         this.scrollContainer.style.willChange = 'scroll-position';
         
-        // Use passive event listeners where possible
+        // Allow wheel events for desktop scrolling
         this.scrollContainer.addEventListener('wheel', (e) => {
-            e.preventDefault();
-        }, { passive: false });
+            // Stop auto-scroll when user scrolls with wheel
+            if (!this.isUserInteracting) {
+                this.handleTouchStart(e);
+                setTimeout(() => this.handleTouchEnd(e), 100);
+            }
+        }, { passive: true });
     }
     
     preventZoom() {
