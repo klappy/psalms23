@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Option 2: Divine Spiral - 3D Journey</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            overflow: hidden;
+            background: radial-gradient(circle at center, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            perspective: 1000px;
+        }
+
+        .spiral-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s ease;
+        }
+
+        .scene-card {
+            position: absolute;
+            width: 280px;
+            height: 400px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            transform-style: preserve-3d;
+        }
+
+        .scene-card:hover {
+            transform: scale(1.05) translateZ(20px);
+            box-shadow: 0 35px 70px rgba(0,0,0,0.4);
+        }
+
+        .scene-card h3 {
+            color: #ffffff;
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .scene-card p {
+            color: #e2e8f0;
+            font-size: 1rem;
+            line-height: 1.5;
+            padding: 0 1.5rem;
+            font-style: italic;
+        }
+
+        .scene-number {
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .scene-icon {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+        /* Spiral positioning */
+        .scene-card:nth-child(1) {
+            transform: translateX(0px) translateY(0px) translateZ(0px) rotateY(0deg);
+        }
+        .scene-card:nth-child(2) {
+            transform: translateX(200px) translateY(-50px) translateZ(-100px) rotateY(45deg);
+        }
+        .scene-card:nth-child(3) {
+            transform: translateX(280px) translateY(-100px) translateZ(-200px) rotateY(90deg);
+        }
+        .scene-card:nth-child(4) {
+            transform: translateX(200px) translateY(-150px) translateZ(-300px) rotateY(135deg);
+        }
+        .scene-card:nth-child(5) {
+            transform: translateX(0px) translateY(-200px) translateZ(-400px) rotateY(180deg);
+        }
+        .scene-card:nth-child(6) {
+            transform: translateX(-200px) translateY(-250px) translateZ(-500px) rotateY(225deg);
+        }
+        .scene-card:nth-child(7) {
+            transform: translateX(-280px) translateY(-300px) translateZ(-600px) rotateY(270deg);
+        }
+        .scene-card:nth-child(8) {
+            transform: translateX(-200px) translateY(-350px) translateZ(-700px) rotateY(315deg);
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            display: flex;
+            gap: 20px;
+            background: rgba(0,0,0,0.5);
+            padding: 15px 25px;
+            border-radius: 25px;
+            backdrop-filter: blur(10px);
+        }
+
+        .control-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+        }
+
+        .center-guide {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: -1;
+            width: 300px;
+            height: 300px;
+            border: 2px dashed rgba(255,255,255,0.2);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .instructions {
+            position: fixed;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            color: white;
+            text-align: center;
+            background: rgba(0,0,0,0.5);
+            padding: 15px 25px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .instructions h4 {
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .instructions p {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        @media (max-width: 768px) {
+            .scene-card {
+                width: 240px;
+                height: 320px;
+            }
+            
+            .scene-card h3 {
+                font-size: 1.2rem;
+            }
+            
+            .scene-card p {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="instructions">
+        <h4>Divine Spiral Journey</h4>
+        <p>Use controls to rotate • Click cards to explore</p>
+    </div>
+
+    <div class="center-guide"></div>
+
+    <div class="spiral-container" id="spiral">
+        <div class="scene-card" data-scene="1">
+            <div class="scene-number">1</div>
+            <div class="scene-icon">🐑</div>
+            <h3>The Shepherd</h3>
+            <p>"The LORD is my shepherd; I shall not want."</p>
+        </div>
+
+        <div class="scene-card" data-scene="2">
+            <div class="scene-number">2</div>
+            <div class="scene-icon">🌱</div>
+            <h3>Green Pastures</h3>
+            <p>"He makes me lie down in green pastures."</p>
+        </div>
+
+        <div class="scene-card" data-scene="3">
+            <div class="scene-number">3</div>
+            <div class="scene-icon">💧</div>
+            <h3>Still Waters</h3>
+            <p>"He leads me beside still waters. He restores my soul."</p>
+        </div>
+
+        <div class="scene-card" data-scene="4">
+            <div class="scene-number">4</div>
+            <div class="scene-icon">🛤️</div>
+            <h3>Righteous Paths</h3>
+            <p>"He leads me in paths of righteousness for his name's sake."</p>
+        </div>
+
+        <div class="scene-card" data-scene="5">
+            <div class="scene-number">5</div>
+            <div class="scene-icon">🏔️</div>
+            <h3>Valley of Shadow</h3>
+            <p>"Even though I walk through the valley of the shadow of death, I will fear no evil."</p>
+        </div>
+
+        <div class="scene-card" data-scene="6">
+            <div class="scene-number">6</div>
+            <div class="scene-icon">🕊️</div>
+            <h3>Divine Comfort</h3>
+            <p>"For you are with me; your rod and your staff, they comfort me."</p>
+        </div>
+
+        <div class="scene-card" data-scene="7">
+            <div class="scene-number">7</div>
+            <div class="scene-icon">🍽️</div>
+            <h3>The Table</h3>
+            <p>"You prepare a table before me in the presence of my enemies."</p>
+        </div>
+
+        <div class="scene-card" data-scene="8">
+            <div class="scene-number">8</div>
+            <div class="scene-icon">🏛️</div>
+            <h3>House of the Lord</h3>
+            <p>"And I shall dwell in the house of the LORD forever."</p>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button class="control-btn" onclick="rotateSpiral(-45)">← Rotate Left</button>
+        <button class="control-btn" onclick="rotateSpiral(45)">Rotate Right →</button>
+        <button class="control-btn" onclick="resetView()">Reset View</button>
+    </div>
+
+    <script>
+        let currentRotation = 0;
+        const spiral = document.getElementById('spiral');
+
+        function rotateSpiral(degrees) {
+            currentRotation += degrees;
+            spiral.style.transform = `rotateY(${currentRotation}deg) translateZ(150px)`;
+        }
+
+        function resetView() {
+            currentRotation = 0;
+            spiral.style.transform = `rotateY(0deg) translateZ(150px)`;
+        }
+
+        // Add click handlers to scene cards
+        document.querySelectorAll('.scene-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const sceneNum = card.dataset.scene;
+                // This would open a detailed view of the scene
+                card.style.transform += ' scale(1.1)';
+                setTimeout(() => {
+                    card.style.transform = card.style.transform.replace(' scale(1.1)', '');
+                }, 300);
+            });
+        });
+
+        // Auto-rotate for demo
+        let autoRotate = true;
+        function startAutoRotate() {
+            if (autoRotate) {
+                rotateSpiral(1);
+                setTimeout(startAutoRotate, 100);
+            }
+        }
+
+        // Stop auto-rotate on user interaction
+        document.addEventListener('click', () => {
+            autoRotate = false;
+        });
+
+        // Start auto-rotate after 2 seconds
+        setTimeout(() => {
+            startAutoRotate();
+        }, 2000);
+
+        // Initialize position
+        spiral.style.transform = 'rotateY(0deg) translateZ(150px)';
+    </script>
+</body>
+</html>

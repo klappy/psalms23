@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Psalm 23 PWA - Epic 2025 Concept Showcase</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .hero {
+            text-align: center;
+            margin-bottom: 3rem;
+            color: white;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .option-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .option-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+        }
+
+        .option-card h3 {
+            color: #2d3748;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .option-card p {
+            color: #4a5568;
+            margin-bottom: 1.5rem;
+            font-size: 1rem;
+        }
+
+        .features {
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+
+        .features li {
+            padding: 0.5rem 0;
+            color: #4a5568;
+            position: relative;
+            padding-left: 2rem;
+        }
+
+        .features li:before {
+            content: '✨';
+            position: absolute;
+            left: 0;
+            top: 0.5rem;
+        }
+
+        .btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 2px solid #667eea;
+            color: #667eea;
+            margin-left: 1rem;
+        }
+
+        .btn-secondary:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .recommendation {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .recommendation h2 {
+            color: #2d3748;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .recommendation p {
+            color: #4a5568;
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .pros-cons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .pros, .cons {
+            padding: 1.5rem;
+            border-radius: 15px;
+        }
+
+        .pros {
+            background: rgba(72, 187, 120, 0.1);
+            border: 1px solid rgba(72, 187, 120, 0.2);
+        }
+
+        .cons {
+            background: rgba(245, 101, 101, 0.1);
+            border: 1px solid rgba(245, 101, 101, 0.2);
+        }
+
+        .pros h4, .cons h4 {
+            margin-bottom: 1rem;
+            color: #2d3748;
+        }
+
+        .pros ul, .cons ul {
+            list-style: none;
+        }
+
+        .pros li:before {
+            content: '✓';
+            color: #48bb78;
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+
+        .cons li:before {
+            content: '⚠';
+            color: #f56565;
+            margin-right: 0.5rem;
+        }
+
+        .resources {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .resources h2 {
+            color: #2d3748;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .resource-link {
+            display: inline-block;
+            margin: 0.5rem 1rem 0.5rem 0;
+        }
+
+        .icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .options-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .pros-cons {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="hero">
+            <h1>Psalm 23 PWA</h1>
+            <p>Epic 2025 Visually Immersive Mobile Experience with 2.5D Scrolling Parallax</p>
+        </div>
+
+        <div class="options-grid">
+            <div class="option-card">
+                <div class="icon">🌄</div>
+                <h3>Option 1: The Shepherd's Journey</h3>
+                <p>Linear parallax scrolling through each verse as a distinct scene with multiple layers moving at different speeds.</p>
+                <ul class="features">
+                    <li>Vertical scroll progression</li>
+                    <li>3-5 parallax layers per scene</li>
+                    <li>Smooth scene transitions</li>
+                    <li>Mobile-optimized UX</li>
+                    <li>Elegant verse typography</li>
+                </ul>
+                <a href="mockups/option1-linear-parallax.html" class="btn">View Demo</a>
+            </div>
+
+            <div class="option-card">
+                <div class="icon">🌟</div>
+                <h3>Option 2: Divine Spiral</h3>
+                <p>Navigate through scenes in a 3D spiral pattern, like ascending a spiritual mountain with interactive cards.</p>
+                <ul class="features">
+                    <li>3D spiral arrangement</li>
+                    <li>Touch rotation controls</li>
+                    <li>Interactive scene cards</li>
+                    <li>Perspective transforms</li>
+                    <li>Exploratory navigation</li>
+                </ul>
+                <a href="mockups/option2-spiral-3d.html" class="btn">View Demo</a>
+            </div>
+
+            <div class="option-card">
+                <div class="icon">🎭</div>
+                <h3>Option 3: Living Diorama</h3>
+                <p>Interactive dioramas where each verse becomes a scene you can explore by tapping elements.</p>
+                <ul class="features">
+                    <li>Tap-to-explore interactions</li>
+                    <li>Horizontal scene navigation</li>
+                    <li>Animated elements</li>
+                    <li>Game-like engagement</li>
+                    <li>Contextual verse reveals</li>
+                </ul>
+                <a href="mockups/option3-interactive-diorama.html" class="btn">View Demo</a>
+            </div>
+        </div>
+
+        <div class="recommendation">
+            <h2>🏆 Recommended Approach</h2>
+            <p>After evaluating all three options, <strong>Option 1: The Shepherd's Journey</strong> is the recommended approach for the following reasons:</p>
+            
+            <div class="pros-cons">
+                <div class="pros">
+                    <h4>Strengths</h4>
+                    <ul>
+                        <li>Intuitive vertical scrolling</li>
+                        <li>Strong narrative flow</li>
+                        <li>Technically feasible</li>
+                        <li>Mobile-optimized</li>
+                        <li>Scalable for enhancements</li>
+                        <li>Universal accessibility</li>
+                    </ul>
+                </div>
+                <div class="cons">
+                    <h4>Considerations</h4>
+                    <ul>
+                        <li>Less interactive than other options</li>
+                        <li>May feel familiar (scrolling)</li>
+                        <li>Requires careful performance optimization</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <p>This approach provides the best balance of visual impact, user experience, and technical feasibility while maintaining the contemplative nature of Psalm 23.</p>
+            
+            <a href="psalm23-pwa-plan.md" class="btn">Read Full Plan</a>
+            <a href="#" class="btn btn-secondary" onclick="startImplementation()">Start Implementation</a>
+        </div>
+
+        <div class="resources">
+            <h2>📚 Additional Resources</h2>
+            <p>Explore the detailed planning and technical specifications:</p>
+            
+            <a href="psalm23-pwa-plan.md" class="resource-link btn">
+                📋 Complete Project Plan
+            </a>
+            
+            <a href="mockups/option1-linear-parallax.html" class="resource-link btn btn-secondary">
+                🎨 Linear Parallax Demo
+            </a>
+            
+            <a href="mockups/option2-spiral-3d.html" class="resource-link btn btn-secondary">
+                🌀 3D Spiral Demo
+            </a>
+            
+            <a href="mockups/option3-interactive-diorama.html" class="resource-link btn btn-secondary">
+                🎭 Interactive Diorama Demo
+            </a>
+        </div>
+    </div>
+
+    <script>
+        function startImplementation() {
+            if (confirm('Ready to start implementing Option 1: The Shepherd\'s Journey? This will begin the full development process.')) {
+                alert('Great! Let\'s begin implementing the recommended approach. The development process will start with setting up the PWA foundation and core parallax scrolling functionality.');
+                // This would trigger the actual implementation process
+            }
+        }
+
+        // Add some interactive elements
+        document.querySelectorAll('.option-card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-5px) scale(1.02)';
+            });
+            
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+    </script>
+</body>
+</html>
